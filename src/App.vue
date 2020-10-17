@@ -13,7 +13,7 @@ export default {
   },
 
   data: () => ({
-    //
+    test: 1
   }),
 };
 </script>
