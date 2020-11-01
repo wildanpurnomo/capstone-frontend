@@ -8,7 +8,7 @@
         <h1 class="display font-weight-bold text-center">Riwayat</h1>
         
         <v-card-title>
-          <v-btn color="green white--text" router to="/tambah_baru">
+          <v-btn color="green white--text" router to="/AddNew">
           <v-icon left color="white">mdi-plus</v-icon>
           <span>Cek Jawaban Baru</span>
         </v-btn>

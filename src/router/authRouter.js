@@ -1,4 +1,4 @@
-export const authRouter = {
+const authRouter = {
     path: '/',
     name: 'AuthView',
     component: () => import('../views/AuthView.vue'),
@@ -15,3 +15,5 @@ export const authRouter = {
         },
     ]
 }
+
+export default authRouter
