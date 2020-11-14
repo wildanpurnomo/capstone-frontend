@@ -11,14 +11,13 @@
                 Login
               </div>
             </v-row>
-            <v-form ref="loginForm" v-model="isFormValid">
+            <v-form ref="loginForm">
               <v-text-field
                 v-model="user.username"
                 label="Username"
                 type="text"
                 append-icon="mdi-account"
                 required
-                :rules="usernameRules"
               ></v-text-field>
               <v-text-field
                 v-model="user.password"
@@ -26,7 +25,6 @@
                 :append-icon="isPasswordShown ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="isPasswordShown ? 'text' : 'password'"
                 required
-                :rules="passwordRules"
                 @click:append="isPasswordShown = !isPasswordShown"
               ></v-text-field>
               <div class="text-center mb-8">
@@ -34,7 +32,7 @@
                   width="100%"
                   type="submit"
                   class="primary"
-                  :disabled="!isFormValid || isFormLoading"
+                  :disabled="isFormLoading"
                   :loading="isFormLoading"
                   @click.prevent="login"
                   >Login</v-btn

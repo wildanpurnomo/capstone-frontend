@@ -16,7 +16,7 @@
                 :items="items">
                 </v-data-table>
 
-                <v-btn router to="/" class="green white--text">
+                <v-btn router to="/Main" class="green white--text">
                     <v-icon left>mdi-arrow-left</v-icon>
                     <span>Kembali</span>
                 </v-btn>

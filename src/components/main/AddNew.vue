@@ -55,7 +55,7 @@
           </v-text-field> 
           </div>
           
-          <v-btn class="green white--text" @click="submit" router to="/hasil"> 
+          <v-btn class="green white--text" @click="submit" router to="/Result"> 
             <v-icon left color="white">mdi-magnify</v-icon> 
             <span>Cek Kemiripan</span>
           </v-btn> 
