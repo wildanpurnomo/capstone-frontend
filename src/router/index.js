@@ -1,28 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Dashboard from '../views/Dashboard.vue'
-import Tambah from '../views/Tambah'
-import Hasil from '../views/Hasil';
+import AuthRoutes from '../router/authRouter'
+import MainRoutes from '../router/mainRouter'
 
 Vue.use(VueRouter)
 
-const routes = [
-  {
-    path: '/',
-    name: 'Dashboard',
-    component: Dashboard
-  },
-  {
-    path: '/tambah_baru',
-    name: 'Tambah Baru',
-    component: Tambah
-  },
-  {
-    path: '/hasil',
-    name: 'Hasil',
-    component: Hasil
-  }
-]
+var allRoutes = []
+
+allRoutes = allRoutes.concat(AuthRoutes, MainRoutes)
+
+const routes = allRoutes
 
 const router = new VueRouter({
   mode: 'history',
