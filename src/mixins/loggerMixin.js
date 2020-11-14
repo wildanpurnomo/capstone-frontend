@@ -16,7 +16,7 @@ export default {
             let bytes = crypto.AES.decrypt(error.response.data.data, process.env.VUE_APP_CRYPTO_KEY);
             let realError = JSON.parse(crypto.enc.Utf8.stringify(bytes));
             this.logIfDebug(`Error from ${error.response.config.url}: ${realError}`);
-            return realError;
+            return realError.message;
         }
     }
 }

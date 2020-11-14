@@ -4,7 +4,7 @@ const crypto = require('crypto-js');
 export default class BaseService {
     constructor() {
         this.key = process.env.VUE_APP_CRYPTO_KEY;
-        this.baseUrl = 'https://capstone-similarity-check.herokuapp.com/api';
+        this.baseUrl = process.env.VUE_APP_BASE_URL;
     }
 
     sendAPIRequest(endpoint, method = 'GET', requestBody = null) {
@@ -13,7 +13,6 @@ export default class BaseService {
         if (method === 'GET') {
             result = axios.get(`${this.baseUrl}${endpoint}`, requestBody);
         } else if (method === 'POST') {
-            console.log(`${this.baseUrl}${endpoint}`, requestBody)
             result = axios.post(`${this.baseUrl}${endpoint}`, requestBody);
         } else if (method === 'PUT') {
             result = axios.put(`${this.baseUrl}${endpoint}`, requestBody);

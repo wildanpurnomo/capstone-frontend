@@ -2,6 +2,8 @@
   <router-view></router-view>
 </template>
 <script>
+import { EventBus } from '@/bus';
+
 export default {
   name: "AuthView",
   computed: {
@@ -17,7 +19,7 @@ export default {
           this.$router.push({ name: 'MainView'});
         }
       } catch (error) {
-        this.logout(true);
+        EventBus.$emit('onSessionEnd');
       }
     },
   },
