@@ -76,7 +76,7 @@ export default {
         let response = await this.$store.dispatch("auth/login", this.user);
         if (response.status === 200) {
           this.errorMessage = "";
-          this.$router.push({ name: "MainView" });
+          this.$router.push({ path: "/main" });
         }
       } catch (error) {
         this.errorMessage = this.decryptError(error);

@@ -1,6 +1,7 @@
 <template>
   <div>
     <MainNavbar :pageTitle="currentPageName" />
+    <div class="mb-3"></div>
     <router-view></router-view>
   </div>
 </template>
@@ -20,6 +21,7 @@ export default {
     async authenticate() {
       try {
         await this.$store.dispatch("auth/authenticate");
+        EventBus.$emit("onAuthenticated");
       } catch (error) {
         this.logout(true);
       }
