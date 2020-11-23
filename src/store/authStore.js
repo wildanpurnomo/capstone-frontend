@@ -8,7 +8,6 @@ export const auth = {
     state: initialAuthState,
     actions: {
         login({ commit }, userData) {
-            console.log(userData)
             return AuthService.login(userData)
                 .then(
                     response => {

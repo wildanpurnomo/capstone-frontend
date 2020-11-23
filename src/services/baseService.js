@@ -7,17 +7,17 @@ export default class BaseService {
         this.baseUrl = process.env.VUE_APP_BASE_URL;
     }
 
-    sendAPIRequest(endpoint, method = 'GET', requestBody = null) {
-        requestBody = requestBody === null ? {} : { payload: this.encryptData(requestBody) };
+    sendAPIRequest(endpoint, method = 'GET', requestBody = null, id = null) {
+        requestBody = requestBody === null ? {} : { payload: requestBody };
         let result;
         if (method === 'GET') {
             result = axios.get(`${this.baseUrl}${endpoint}`, requestBody);
         } else if (method === 'POST') {
             result = axios.post(`${this.baseUrl}${endpoint}`, requestBody);
         } else if (method === 'PUT') {
-            result = axios.put(`${this.baseUrl}${endpoint}`, requestBody);
+            result = axios.put(`${this.baseUrl}${endpoint}${id}`, requestBody);
         } else if (method === 'DELETE') {
-            result = axios.delete(`${this.baseUrl}${endpoint}`, requestBody);
+            result = axios.delete(`${this.baseUrl}${endpoint}${id}`, requestBody);
         }
         return result
             .then(
@@ -33,10 +33,10 @@ export default class BaseService {
     }
 
     getRealResponse(endpoint, encryptedResponse) {
-        let bytes = crypto.AES.decrypt(encryptedResponse, this.key);
-        let realResponse = JSON.parse(crypto.enc.Utf8.stringify(bytes));
-        this.logIfDebug(`Response from ${endpoint}`, realResponse);
-        return realResponse;
+        // let bytes = crypto.AES.decrypt(encryptedResponse, this.key);
+        // let realResponse = JSON.parse(crypto.enc.Utf8.stringify(bytes));
+        this.logIfDebug(`Response from ${endpoint}`, encryptedResponse);
+        return encryptedResponse;
     }
 
     logIfDebug(message, object) {

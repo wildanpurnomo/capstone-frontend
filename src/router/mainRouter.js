@@ -4,7 +4,7 @@ const mainRouter ={
     component: () => import('../views/MainView.vue'),
     children:[
         {
-            path: '/',
+            path: '',
             name: 'Dashboard',
             component: () => import('../components/main/Dashboard')
         },

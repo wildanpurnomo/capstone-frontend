@@ -99,7 +99,7 @@ export default {
         if (response.status === 200) {
           this.isFormLoading = false;
           this.errorMessage = "";
-          this.$router.push({ name: "MainView" });
+          this.$router.push({ path: "/main" });
         }
       } catch (error) {
         this.errorMessage = this.decryptError(error);

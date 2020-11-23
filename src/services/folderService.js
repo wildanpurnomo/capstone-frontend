@@ -14,12 +14,12 @@ class FolderService extends BaseService {
         return this.sendAPIRequest(endpoints.folder, 'GET', data)
     }
     
-    edit(data){
-        return this.sendAPIRequest(endpoints.folder, 'PUT', data)
+    edit(data, id){
+        return this.sendAPIRequest(endpoints.folder, 'PUT', data, id)
     }
     
-    delete(){
-        return this.sendAPIRequest(endpoints.folder, 'DEL')
+    delete(id){
+        return this.sendAPIRequest(endpoints.folder, 'DELETE', null, id)
     }
 }
 

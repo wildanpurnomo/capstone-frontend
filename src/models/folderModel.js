@@ -1,6 +1,6 @@
 export default class folderModel {
-    constructor(creatorID = '', folderName = ''){
-        this.creatorID = creatorID;
+    constructor(creatorId = '', folderName = ''){
+        this.creatorId = creatorId;
         this.folderName = folderName;
     }
 }

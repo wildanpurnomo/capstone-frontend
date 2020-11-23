@@ -1,6 +1,5 @@
 <template>
   <div class="Dashboard">
-
     <v-container>
       <v-card
       class="py-5 px-4"
@@ -12,9 +11,10 @@
 
         <v-data-table
           :headers="headers"
-          :items="folders"
+          :items="folderItems"
           :items-per-page="10"
           :search="search"
+          
           loading-text="Sedang mengambil data"
         >
           <template v-slot:top>
@@ -51,8 +51,8 @@
                   <v-card-text>
                     <v-container>
                       <v-text-field
-                        v-model="folderName"
-                        label="Folder Name"
+                        v-model="editedItem.folderName"
+                        label="Nama Folder"
                       ></v-text-field>
                     </v-container>
                   </v-card-text>
@@ -82,7 +82,7 @@
                   <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="blue darken-1" text @click="closeDelete">Batal</v-btn>
-                    <v-btn color="blue darken-1" text @click="hapus">Hapus</v-btn>
+                    <v-btn color="blue darken-1" text @click="deleteItemConfirm">Hapus</v-btn>
                     <v-spacer></v-spacer>
                   </v-card-actions>
                 </v-card>
@@ -96,6 +96,10 @@
             <v-icon small @click="detailFolder(item)">mdi-arrow-right-circle</v-icon>
           </template>
 
+          <template v-slot:[`item.updatedAt`]="{ value }">
+            <p>{{ dateToString(value) }}</p>
+          </template>
+
           <template v-slot:no-data>
             <v-btn color="primary" @click="initialize">Muat ulang</v-btn>
           </template>
@@ -107,19 +111,24 @@
 
 <script>
 import folderModel from "@/models/folderModel";
+import loggerMixin from "@/mixins/loggerMixin";
+import { EventBus } from "@/bus";
 
 export default {
   data(){
     return{
       folder: new folderModel(),
+      editedItem: new folderModel(),
       dialog: false,
       dialogDelete: false,
       search:'',
       editedIndex: -1,
       folderName: '',
+      errorMessage: "",
+      folderItems : [],
       headers:[
         {text: 'Nama Folder', value: 'folderName'},
-        {text: 'Tanggal', value: 'createdAt'},
+        {text: 'Tanggal Modifikasi', value: 'updatedAt'},
         {text: 'Aksi', value: 'actions', sortable: false}
       ]
     }
@@ -128,12 +137,9 @@ export default {
     formTitle(){
       return this.editedIndex === -1? 'Folder Baru' : 'Edit Folder'
     },
-    folders(){
-      return this.$store.getters.get;
+    userId(){
+      return this.$store.getters["auth/userData"]._id;
     }
-  },
-  created:{
-    //load table data here
   },
   watch:{
     dialog(val){
@@ -144,51 +150,105 @@ export default {
     }
   },
   methods:{
-    /*editItem(item){
-      this.editedIndex = ''//index item
-
+    editItem(item){
+      this.editedIndex = this.folderItems.indexOf(item);
+      this.editedItem = Object.assign({}, item);
       this.dialog = true
     },
     deleteItem(item){
-      this.editedIndex = ''//index item
-
+      this.editedIndex = this.folderItems.indexOf(item);
+      this.editedItem = Object.assign({}, item);
       this.dialogDelete = true
-    },*/
-    initialize(){
-      //initialize folder here
     },
-    deleteItemConfirm(){
-      //delete item here
+    async initialize(){
+      this.folder.creatorId = this.userId;
+      this.editedItem.creatorId = this.userId;
+      await this.getFolder();
+      this.folderItems = this.$store.getters["folder/folderData"];  
+    },
+    async getFolder(){
+      try{
+        let response = await this.$store.dispatch("folder/getFolder", this.folder);
+        if(response.status === 200){
+          this.errorMessage = "";
+        }
+      } catch (error){
+        console.log(error);
+        this.errorMessage = 'this.decryptError(error);'
+        console.log(this.errorMessage);
+      }
+    },
+    async deleteItemConfirm(){
+      try{
+        let response = await this.$store.dispatch("folder/delete", this.editedItem);
+        if(response.status === 200){
+          console.log(response);
+          this.initialize();
+        }
+      } catch(error){
+        // this.errorMessage = this.decryptError(error);
+        console.log(error);
+      }
       this.closeDelete()
     },
     close(){
       this.dialog = false
-      this.$$nextTick (() => {
+      this.$nextTick (() => {
+        this.editedItem = Object.assign({}, folderModel);
         this.editedIndex = -1
-        
       })
     },
     closeDelete(){
       this.dialogDelete = false
       this.$nextTick (() => {
+        this.editedItem = Object.assign({}, folderModel);
         this.editedIndex = -1
       })
     },
     async save(){
-      if(this.editedIndex > -1){
+      if(this.editedIndex < 0){
+        //loading here
         try{
-          let response = await this.$store.dispatch("", this.folder);
+          let response = await this.$store.dispatch("folder/create", this.editedItem);
           if (response.status === 200) {
-            //if success
+            // remove loading
+            this.errorMessage = "";
+            this.initialize();
           }
         } catch (error) {
-          //error message here
+          this.errorMessage = this.decryptError(error);
+          // remove loading
         }
       } else{
-        //add item
+        try{
+          let response = await this.$store.dispatch("folder/edit", this.editedItem);
+          if (response.status === 200) {
+            console.log(response);
+            this.initialize();
+          }
+        } catch (error) {
+          this.errorMessage = this.decryptError(error);
+          console.log(this.errorMessage);
+        }
       }
       this.close()
+    },
+    detailFolder(item){
+      console.log('on progress')
+      console.log(item);
+    },
+    dateToString(date){
+      var d = new Date(date);
+      var option = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+      return d.toLocaleDateString("id", option)
     }
-  }
+  },
+  created(){
+    this.initialize();
+    EventBus.$on("onAuthenticated", () =>{
+      this.initialize();
+    })
+  },
+  mixins: loggerMixin,
 }
 </script>
