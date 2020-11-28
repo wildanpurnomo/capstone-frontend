@@ -1,40 +1,31 @@
 import axios from 'axios';
-const crypto = require('crypto-js');
-
 export default class BaseService {
     constructor() {
-        this.key = process.env.VUE_APP_CRYPTO_KEY;
-        this.baseUrl = process.env.VUE_APP_BASE_URL;
+        this.baseUrl = "https://be-dot-capstone-similarity-check.et.r.appspot.com/api";
     }
 
     sendAPIRequest(endpoint, method = 'GET', requestBody = null, id = null) {
-        requestBody = requestBody === null ? {} : { payload: requestBody };
+        requestBody = requestBody === null ? {} : requestBody;
         let result;
         if (method === 'GET') {
-            result = axios.get(`${this.baseUrl}${endpoint}`, requestBody);
+            result = axios.get(`${this.baseUrl}${endpoint}`, { params: requestBody });
         } else if (method === 'POST') {
             result = axios.post(`${this.baseUrl}${endpoint}`, requestBody);
         } else if (method === 'PUT') {
             result = axios.put(`${this.baseUrl}${endpoint}${id}`, requestBody);
         } else if (method === 'DELETE') {
-            result = axios.delete(`${this.baseUrl}${endpoint}${id}`, requestBody);
+            result = axios.delete(`${this.baseUrl}${endpoint}${id}`);
         }
         return result
             .then(
                 response => {
-                    response.data.data = this.getRealResponse(endpoint, response.data.data);
+                    response.data.data = this.logResponse(endpoint, response.data.data);
                     return response;
                 }
             );
     }
 
-    encryptData(rawJsonData) {
-        return crypto.AES.encrypt(JSON.stringify(rawJsonData), this.key).toString();
-    }
-
-    getRealResponse(endpoint, encryptedResponse) {
-        // let bytes = crypto.AES.decrypt(encryptedResponse, this.key);
-        // let realResponse = JSON.parse(crypto.enc.Utf8.stringify(bytes));
+    logResponse(endpoint, encryptedResponse) {
         this.logIfDebug(`Response from ${endpoint}`, encryptedResponse);
         return encryptedResponse;
     }

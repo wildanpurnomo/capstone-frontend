@@ -20,8 +20,8 @@ export const folder = {
                     }
                 )
         },
-        getFolder({ commit }, folderData){
-            return FolderService.getFolder(folderData)
+        getFolder({ commit }){
+            return FolderService.getFolder()
                 .then(
                     response => {
                         commit('createSuccess', response.data.data.folderList);

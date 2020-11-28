@@ -10,8 +10,8 @@ class FolderService extends BaseService {
         return this.sendAPIRequest(endpoints.folder, 'POST', data)
     }
     
-    getFolder(data){
-        return this.sendAPIRequest(endpoints.folder, 'GET', data)
+    getFolder(){
+        return this.sendAPIRequest(endpoints.folder, 'GET')
     }
     
     edit(data, id){

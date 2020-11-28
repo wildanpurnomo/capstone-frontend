@@ -106,6 +106,7 @@
         </v-data-table>
       </v-card>
     </v-container>
+    <Snackbar :duration="3000" />
   </div>
 </template>
 
@@ -113,8 +114,10 @@
 import folderModel from "@/models/folderModel";
 import loggerMixin from "@/mixins/loggerMixin";
 import { EventBus } from "@/bus";
+import Snackbar from "@/components/basic/Snackbar";
 
 export default {
+  components: { Snackbar },
   data(){
     return{
       folder: new folderModel(),
@@ -168,14 +171,13 @@ export default {
     },
     async getFolder(){
       try{
-        let response = await this.$store.dispatch("folder/getFolder", this.folder);
+        let response = await this.$store.dispatch("folder/getFolder");
         if(response.status === 200){
           this.errorMessage = "";
         }
       } catch (error){
-        console.log(error);
-        this.errorMessage = 'this.decryptError(error);'
-        console.log(this.errorMessage);
+        let message = this.decryptError(error);
+        EventBus.$emit("onShowSnackbar", message);
       }
     },
     async deleteItemConfirm(){
@@ -186,8 +188,8 @@ export default {
           this.initialize();
         }
       } catch(error){
-        // this.errorMessage = this.decryptError(error);
-        console.log(error);
+        let message = this.decryptError(error);
+        EventBus.$emit("onShowSnackbar", message);
       }
       this.closeDelete()
     },
@@ -216,7 +218,8 @@ export default {
             this.initialize();
           }
         } catch (error) {
-          this.errorMessage = this.decryptError(error);
+          let message = this.decryptError(error);
+          EventBus.$emit("onShowSnackbar", message);
           // remove loading
         }
       } else{
@@ -227,8 +230,8 @@ export default {
             this.initialize();
           }
         } catch (error) {
-          this.errorMessage = this.decryptError(error);
-          console.log(this.errorMessage);
+          let message = this.decryptError(error);
+          EventBus.$emit("onShowSnackbar", message);
         }
       }
       this.close()
@@ -249,6 +252,6 @@ export default {
       this.initialize();
     })
   },
-  mixins: loggerMixin,
+  mixins: [loggerMixin],
 }
 </script>
