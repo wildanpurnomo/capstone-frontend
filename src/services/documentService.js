@@ -1,17 +1,21 @@
 import { endpoints } from './endpoints';
 import BaseService from './baseService';
 
-class DocumentService extends BaseService{
-    constructor(){
+class DocumentService extends BaseService {
+    constructor() {
         super();
     }
 
-    upload(data){
-        return this.sendAPIRequest(endpoints.documents, 'POST', data);
+    upload(data) {
+        return this.sendAPIRequest(endpoints.documents, 'POST', data, undefined, { headers: { 'Content-Type': 'multipart/form-data' } });
     }
 
-    getDocument(){
-        return this.sendAPIRequest(endpoints.documents, 'GET');
+    getDocuments(id) {
+        return this.sendAPIRequest(endpoints.documents, 'GET', undefined, id);
+    }
+
+    delete(data) {
+        return this.sendAPIRequest(endpoints.documents, 'DELETE', undefined, data);
     }
 }
 

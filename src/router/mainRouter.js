@@ -9,9 +9,9 @@ const mainRouter ={
             component: () => import('../components/main/Dashboard')
         },
         {
-            path: '/addnew',
-            name: 'AddNew',
-            component: () => import('../components/main/AddNew')
+            path: '/folder/:id',
+            name: 'Folder',
+            component: () => import('../components/main/Folder')
         },
         {
             path: '/result',

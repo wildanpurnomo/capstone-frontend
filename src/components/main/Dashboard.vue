@@ -1,20 +1,17 @@
 <template>
   <div class="Dashboard">
     <v-container>
-      <v-card
-      class="py-5 px-4"
-      elevation="4">
+      <v-card class="py-5 px-4" elevation="4">
         <h1 class="display font-weight-bold text-center">Dashboard</h1>
-        
-        <v-card-title>
-        </v-card-title> 
+
+        <v-card-title> </v-card-title>
 
         <v-data-table
           :headers="headers"
           :items="folderItems"
           :items-per-page="10"
           :search="search"
-          
+          :loading="loading"
           loading-text="Sedang mengambil data"
         >
           <template v-slot:top>
@@ -30,24 +27,17 @@
                 hide-details
               ></v-text-field>
               <v-spacer></v-spacer>
-              <v-dialog
-                v-model="dialog"
-                max-width="500px"
-              >
+              <v-dialog v-model="dialog" max-width="500px">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    color="primary"
-                    dark
-                    v-bind="attrs"
-                    v-on="on"
-                    
-                  >
-                    <v-icon left>mdi-plus</v-icon> 
+                  <v-btn color="primary" dark v-bind="attrs" v-on="on">
+                    <v-icon left>mdi-plus</v-icon>
                     <span>Folder Baru</span>
                   </v-btn>
                 </template>
                 <v-card>
-                  <v-card-title><span class="headline">{{ formTitle }}</span></v-card-title>
+                  <v-card-title
+                    ><span class="headline">{{ formTitle }}</span></v-card-title
+                  >
                   <v-card-text>
                     <v-container>
                       <v-text-field
@@ -58,31 +48,31 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn
-                      color="blue darken-1"
-                      text
-                      @click="close"
+                    <v-btn color="blue darken-1" text @click="close"
+                      >Batal</v-btn
                     >
-                      Batal
-                    </v-btn>
-                    <v-btn
-                      color="blue darken-1"
-                      text
-                      @click="save"
+                    <v-btn color="blue darken-1" text @click="save"
+                      >Simpan</v-btn
                     >
-                      Simpan
-                    </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
 
               <v-dialog v-model="dialogDelete" max-width="500px">
                 <v-card>
-                  <v-card-title class="headline">Apakah anda ingin menghapus folder ini?</v-card-title>
+                  <v-card-title class="headline"
+                    ><span class="mx-auto"
+                      >Apakah anda ingin menghapus folder ini?</span
+                    ></v-card-title
+                  >
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="closeDelete">Batal</v-btn>
-                    <v-btn color="blue darken-1" text @click="deleteItemConfirm">Hapus</v-btn>
+                    <v-btn color="blue darken-1" text @click="closeDelete"
+                      >Batal</v-btn
+                    >
+                    <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+                      >Hapus</v-btn
+                    >
                     <v-spacer></v-spacer>
                   </v-card-actions>
                 </v-card>
@@ -91,9 +81,15 @@
           </template>
 
           <template v-slot:[`item.actions`]="{ item }">
-            <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-            <v-icon small class="mr-2" @click="deleteItem(item)">mdi-delete</v-icon>
-            <v-icon small @click="detailFolder(item)">mdi-arrow-right-circle</v-icon>
+            <v-icon small class="mr-2" @click="editItem(item)"
+              >mdi-pencil</v-icon
+            >
+            <v-icon small class="mr-2" @click="deleteItem(item)"
+              >mdi-delete</v-icon
+            >
+            <v-icon small @click="detailFolder(item)"
+              >mdi-arrow-right-circle</v-icon
+            >
           </template>
 
           <template v-slot:[`item.updatedAt`]="{ value }">
@@ -118,140 +114,159 @@ import Snackbar from "@/components/basic/Snackbar";
 
 export default {
   components: { Snackbar },
-  data(){
-    return{
+  data() {
+    return {
       folder: new folderModel(),
       editedItem: new folderModel(),
       dialog: false,
       dialogDelete: false,
-      search:'',
+      search: "",
+      loading: false,
       editedIndex: -1,
-      folderName: '',
       errorMessage: "",
-      folderItems : [],
-      headers:[
-        {text: 'Nama Folder', value: 'folderName'},
-        {text: 'Tanggal Modifikasi', value: 'updatedAt'},
-        {text: 'Aksi', value: 'actions', sortable: false}
-      ]
-    }
+      folderItems: [],
+      headers: [
+        { text: "Nama Folder", value: "folderName" },
+        { text: "Tanggal Modifikasi", value: "updatedAt" },
+        { text: "Aksi", value: "actions", sortable: false },
+      ],
+    };
   },
-  computed:{
-    formTitle(){
-      return this.editedIndex === -1? 'Folder Baru' : 'Edit Folder'
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? "Folder Baru" : "Edit Folder";
     },
-    userId(){
+    userId() {
       return this.$store.getters["auth/userData"]._id;
-    }
-  },
-  watch:{
-    dialog(val){
-      val || this.close()
     },
-    dialogDelete(val){
-      val || this.closeDelete()
-    }
   },
-  methods:{
-    editItem(item){
+  watch: {
+    dialog(val) {
+      val || this.close();
+    },
+    dialogDelete(val) {
+      val || this.closeDelete();
+    },
+  },
+  methods: {
+    editItem(item) {
       this.editedIndex = this.folderItems.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      this.dialog = true
+      this.dialog = true;
     },
-    deleteItem(item){
+    deleteItem(item) {
       this.editedIndex = this.folderItems.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true
+      this.dialogDelete = true;
     },
-    async initialize(){
+    async initialize() {
       this.folder.creatorId = this.userId;
       this.editedItem.creatorId = this.userId;
       await this.getFolder();
-      this.folderItems = this.$store.getters["folder/folderData"];  
+      this.folderItems = this.$store.getters["folder/folderData"];
     },
-    async getFolder(){
-      try{
+    async getFolder() {
+      this.loading = true;
+      try {
         let response = await this.$store.dispatch("folder/getFolder");
-        if(response.status === 200){
+        if (response.status === 200) {
           this.errorMessage = "";
+          this.loading = false;
         }
-      } catch (error){
+      } catch (error) {
         let message = this.decryptError(error);
+        this.loading = false;
         EventBus.$emit("onShowSnackbar", message);
       }
     },
-    async deleteItemConfirm(){
-      try{
-        let response = await this.$store.dispatch("folder/delete", this.editedItem);
-        if(response.status === 200){
-          console.log(response);
+    async deleteItemConfirm() {
+      try {
+        let response = await this.$store.dispatch(
+          "folder/delete",
+          this.editedItem
+        );
+        if (response.status === 200) {
           this.initialize();
         }
-      } catch(error){
+      } catch (error) {
         let message = this.decryptError(error);
         EventBus.$emit("onShowSnackbar", message);
       }
-      this.closeDelete()
+      this.closeDelete();
     },
-    close(){
-      this.dialog = false
-      this.$nextTick (() => {
+    close() {
+      this.dialog = false;
+      this.$nextTick(() => {
         this.editedItem = Object.assign({}, folderModel);
-        this.editedIndex = -1
-      })
+        this.editedIndex = -1;
+      });
     },
-    closeDelete(){
-      this.dialogDelete = false
-      this.$nextTick (() => {
+    closeDelete() {
+      this.dialogDelete = false;
+      this.$nextTick(() => {
         this.editedItem = Object.assign({}, folderModel);
-        this.editedIndex = -1
-      })
+        this.editedIndex = -1;
+      });
     },
-    async save(){
-      if(this.editedIndex < 0){
-        //loading here
-        try{
-          let response = await this.$store.dispatch("folder/create", this.editedItem);
+    async save() {
+      this.loading = true;
+      if (this.editedIndex < 0) {
+        try {
+          let response = await this.$store.dispatch(
+            "folder/create",
+            this.editedItem
+          );
           if (response.status === 200) {
-            // remove loading
             this.errorMessage = "";
             this.initialize();
+            this.loading = false;
           }
         } catch (error) {
           let message = this.decryptError(error);
           EventBus.$emit("onShowSnackbar", message);
-          // remove loading
+          this.loading = false;
         }
-      } else{
-        try{
-          let response = await this.$store.dispatch("folder/edit", this.editedItem);
+      } else {
+        try {
+          let response = await this.$store.dispatch(
+            "folder/edit",
+            this.editedItem
+          );
           if (response.status === 200) {
             console.log(response);
             this.initialize();
+            this.loading = false;
           }
         } catch (error) {
           let message = this.decryptError(error);
+          this.loading = false;
           EventBus.$emit("onShowSnackbar", message);
         }
       }
-      this.close()
+      this.close();
     },
-    detailFolder(item){
-      console.log('on progress')
-      console.log(item);
+    detailFolder(item) {
+      // EventBus.$emit("onFolder", item);
+      const id = item._id;
+      this.$router.push({ name: "Folder", params: { item, id } });
     },
-    dateToString(date){
+    dateToString(date) {
       var d = new Date(date);
-      var option = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
-      return d.toLocaleDateString("id", option)
-    }
+      var option = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      };
+      return d.toLocaleDateString("id", option);
+    },
   },
-  created(){
+  created() {
     this.initialize();
-    EventBus.$on("onAuthenticated", () =>{
+    EventBus.$on("onAuthenticated", () => {
       this.initialize();
-    })
+    });
   },
   mixins: [loggerMixin],
-}
+};
 </script>
