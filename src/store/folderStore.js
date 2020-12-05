@@ -11,7 +11,6 @@ export const folder = {
             return FolderService.addNew(folderData)
                 .then(
                     response => {
-                        console.log(response);
                         commit('createSuccess', response.data.data.folderData);
                         return Promise.resolve(response);
                     },

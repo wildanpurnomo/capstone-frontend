@@ -4,17 +4,17 @@ export default class BaseService {
         this.baseUrl = "https://be-dot-capstone-similarity-check.et.r.appspot.com/api";
     }
 
-    sendAPIRequest(endpoint, method = 'GET', requestBody = null, id = null) {
+    sendAPIRequest(endpoint, method = 'GET', requestBody = null, id = '', additionalOption = {}) {
         requestBody = requestBody === null ? {} : requestBody;
         let result;
         if (method === 'GET') {
-            result = axios.get(`${this.baseUrl}${endpoint}`, { params: requestBody });
+            result = axios.get(`${this.baseUrl}${endpoint}${id}`, { params: requestBody }, additionalOption);
         } else if (method === 'POST') {
-            result = axios.post(`${this.baseUrl}${endpoint}`, requestBody);
+            result = axios.post(`${this.baseUrl}${endpoint}`, requestBody, additionalOption);
         } else if (method === 'PUT') {
-            result = axios.put(`${this.baseUrl}${endpoint}${id}`, requestBody);
+            result = axios.put(`${this.baseUrl}${endpoint}${id}`, requestBody, additionalOption);
         } else if (method === 'DELETE') {
-            result = axios.delete(`${this.baseUrl}${endpoint}${id}`);
+            result = axios.delete(`${this.baseUrl}${endpoint}${id}`, additionalOption);
         }
         return result
             .then(
