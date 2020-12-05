@@ -116,7 +116,6 @@
 </template>
 
 <script>
-//import documentModel from "@/models/documentModel";
 import { EventBus } from "@/bus";
 import loggerMixin from "@/mixins/loggerMixin";
 
@@ -208,19 +207,7 @@ export default {
     },
     async deleteItemConfirm() {
       console.log("delete on progress");
-      console.log(this.editedItem);
-      // try {
-      //   let response = await this.$store.dispatch(
-      //     "document/delete",
-      //     this.editedItem
-      //   );
-      //   if (response.status === 200) {
-      //     this.initialize();
-      //   }
-      // } catch (error) {
-      //   let message = this.decryptError(error);
-      //   EventBus.$emit("onShowSnackbar", message);
-      // }
+      //deleteItem
       this.closeDelete();
     },
     dateToString(date) {
@@ -234,9 +221,7 @@ export default {
       return d.toLocaleDateString("id", option);
     },
     submit() {
-      console.log("cek kemiripan brrr");
-      console.log(this.threshold);
-      console.log(this.docs);
+      console.log("cek kemiripan on develop");
       //cek kemiripan
     },
     close() {

@@ -246,7 +246,6 @@ export default {
       this.close();
     },
     detailFolder(item) {
-      // EventBus.$emit("onFolder", item);
       const id = item._id;
       this.$router.push({ name: "Folder", params: { item, id } });
     },
