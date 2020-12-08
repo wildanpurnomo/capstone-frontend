@@ -1,7 +1,7 @@
 import axios from 'axios';
 export default class BaseService {
     constructor() {
-        this.baseUrl = "https://be-dot-capstone-similarity-check.et.r.appspot.com/api";
+        this.baseUrl = "https://capstone-similarity-check.herokuapp.com/api/";
     }
 
     sendAPIRequest(endpoint, method = 'GET', requestBody = null, id = '', additionalOption = {}) {

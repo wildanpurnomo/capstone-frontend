@@ -1,8 +1,8 @@
-const mainRouter ={
+const mainRouter = {
     path: '/main',
     name: 'MainView',
     component: () => import('../views/MainView.vue'),
-    children:[
+    children: [
         {
             path: '',
             name: 'Dashboard',
@@ -14,10 +14,10 @@ const mainRouter ={
             component: () => import('../components/main/Folder')
         },
         {
-            path: '/result',
+            path: '/result/:id',
             name: 'Result',
             component: () => import('../components/main/Result')
-        }        
+        }
     ]
 }
 

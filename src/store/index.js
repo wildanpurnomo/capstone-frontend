@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import { auth } from './authStore'
 import { folder } from './folderStore'
 import { document } from './documentStore'
+import { analytics } from './analyticsStore'
 
 Vue.use(Vuex)
 
@@ -11,5 +12,6 @@ export default new Vuex.Store({
     auth,
     folder,
     document,
+    analytics,
   }
 })

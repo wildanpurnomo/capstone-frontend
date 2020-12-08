@@ -112,14 +112,17 @@
         </v-form>
       </v-card>
     </v-container>
+    <Snackbar :duration="3000" />
   </div>
 </template>
 
 <script>
 import { EventBus } from "@/bus";
 import loggerMixin from "@/mixins/loggerMixin";
+import Snackbar from "@/components/basic/Snackbar";
 
 export default {
+  components: { Snackbar },
   data() {
     return {
       editedItem: new FormData(),
@@ -197,7 +200,6 @@ export default {
         EventBus.$emit("onShowSnackbar", message);
       }
       this.loading = false;
-      this.documentsUpload = [];
       this.close();
     },
     deleteItem(item) {
@@ -221,8 +223,13 @@ export default {
       return d.toLocaleDateString("id", option);
     },
     submit() {
-      console.log("cek kemiripan on develop");
-      //cek kemiripan
+      let item = {
+        threshold: this.threshold / 100,
+        documents: this.docs,
+        folderName: this.folder.folderName,
+      };
+      let id = this.$route.params.id;
+      this.$router.push({ name: "Result", params: { item, id } });
     },
     close() {
       this.dialog = false;

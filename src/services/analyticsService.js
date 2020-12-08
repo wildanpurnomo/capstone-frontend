@@ -2,11 +2,11 @@ import { endpoints } from './endpoints';
 import BaseService from './baseService';
 
 class AnalyticsService extends BaseService {
-    constructor(){
+    constructor() {
         super();
     }
 
-    addNew(data){
+    analyze(data) {
         return this.sendAPIRequest(endpoints.analytics, 'POST', data)
     }
 }
