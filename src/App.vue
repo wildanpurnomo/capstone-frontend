@@ -10,11 +10,6 @@ export default {
 
   components: {},
 
-  data: () => ({
-    test: 1,
-    test_baru: 2,
-    wkwk: "ini bikin konflik wkwk",
-    test_2: "xx",
-  }),
+  data: () => ({}),
 };
 </script>
