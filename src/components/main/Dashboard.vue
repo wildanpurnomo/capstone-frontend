@@ -87,7 +87,7 @@
             <v-icon small class="mr-2" @click="deleteItem(item)"
               >mdi-delete</v-icon
             >
-            <v-icon small @click="detailFolder(item)"
+            <v-icon small @click="folderDetail(item)"
               >mdi-arrow-right-circle</v-icon
             >
           </template>
@@ -245,7 +245,7 @@ export default {
       }
       this.close();
     },
-    detailFolder(item) {
+    folderDetail(item) {
       const id = item._id;
       this.$router.push({ name: "Folder", params: { item, id } });
     },
