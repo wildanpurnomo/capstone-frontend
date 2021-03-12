@@ -56,7 +56,7 @@
                 >
               </div>
               <div class="text-center">
-                <router-link :to="{ name: 'AuthLogin' }"
+                <router-link :to="{ name: 'Login' }"
                   >Kembali ke login</router-link
                 >
               </div>
@@ -76,7 +76,8 @@ import formInputMixin from "@/mixins/formInputMixin";
 import loggerMixin from "@/mixins/loggerMixin";
 
 export default {
-  name: "AuthRegister",
+  name: "RegisterView",
+
   computed: {
     passwordConfirmationRules() {
       return [
@@ -85,12 +86,14 @@ export default {
       ];
     },
   },
+
   data: () => ({
     user: new UserModel(),
     errorMessage: "",
     passwordConfirmation: "",
     isPasswordShown: false,
   }),
+
   methods: {
     async register() {
       this.isFormLoading = true;
@@ -99,7 +102,7 @@ export default {
         if (response.status === 200) {
           this.isFormLoading = false;
           this.errorMessage = "";
-          this.$router.push({ path: "/main" });
+          this.$router.push({ name: "Dashboard" });
         }
       } catch (error) {
         this.errorMessage = this.decryptError(error);
@@ -107,6 +110,7 @@ export default {
       }
     },
   },
+  
   mixins: [formInputMixin, loggerMixin],
 };
 </script>

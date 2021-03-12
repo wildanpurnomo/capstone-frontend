@@ -39,7 +39,7 @@
                 >
               </div>
               <div class="text-center">
-                <router-link :to="{ name: 'AuthRegister' }"
+                <router-link :to="{ name: 'Register' }"
                   >Register</router-link
                 >
               </div>
@@ -58,17 +58,20 @@
 import formInputMixin from "@/mixins/formInputMixin";
 import loggerMixin from "@/mixins/loggerMixin";
 import UserModel from "@/models/UserModel";
-import Snackbar from "@/components/basic/Snackbar";
+import Snackbar from "@/components/Snackbar";
 import { EventBus } from "@/bus";
 
 export default {
-  name: "AuthLogin",
+  name: "LoginView",
+
   components: { Snackbar },
+
   data: () => ({
     user: new UserModel(),
     isPasswordShown: false,
     errorMessage: "",
   }),
+
   methods: {
     async login() {
       this.isFormLoading = true;
@@ -76,7 +79,7 @@ export default {
         let response = await this.$store.dispatch("auth/login", this.user);
         if (response.status === 200) {
           this.errorMessage = "";
-          this.$router.push({ path: "/main" });
+          this.$router.push({ name: "Dashboard" });
         }
       } catch (error) {
         this.errorMessage = this.decryptError(error);
@@ -84,6 +87,7 @@ export default {
       }
     },
   },
+
   mounted() {
     let params = this.$route.params;
     if (params.snackbarMessage) {

@@ -110,10 +110,11 @@
 import folderModel from "@/models/folderModel";
 import loggerMixin from "@/mixins/loggerMixin";
 import { EventBus } from "@/bus";
-import Snackbar from "@/components/basic/Snackbar";
+import Snackbar from "@/components/Snackbar";
 
 export default {
   components: { Snackbar },
+
   data() {
     return {
       folder: new folderModel(),
@@ -132,6 +133,7 @@ export default {
       ],
     };
   },
+
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "Folder Baru" : "Edit Folder";
@@ -140,6 +142,7 @@ export default {
       return this.$store.getters["auth/userData"]._id;
     },
   },
+
   watch: {
     dialog(val) {
       val || this.close();
@@ -148,6 +151,7 @@ export default {
       val || this.closeDelete();
     },
   },
+
   methods: {
     editItem(item) {
       this.editedIndex = this.folderItems.indexOf(item);
@@ -247,7 +251,7 @@ export default {
     },
     folderDetail(item) {
       const id = item._id;
-      this.$router.push({ name: "Folder", params: { item, id } });
+      this.$router.push({ name: "Folder", params: { folderId: id } });
     },
     dateToString(date) {
       var d = new Date(date);
@@ -260,6 +264,7 @@ export default {
       return d.toLocaleDateString("id", option);
     },
   },
+  
   created() {
     this.initialize();
     EventBus.$on("onAuthenticated", () => {

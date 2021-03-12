@@ -110,7 +110,7 @@
 <script>
 import { EventBus } from "@/bus";
 import loggerMixin from "@/mixins/loggerMixin";
-import Snackbar from "@/components/basic/Snackbar";
+import Snackbar from "@/components/Snackbar";
 
 export default {
   components: { Snackbar },
@@ -188,7 +188,11 @@ export default {
     },
   },
   created() {
-    this.initialize();
+    if (this.folderDetail !== null || this.folderDetail !== undefined) {
+      this.initialize();
+    } else {
+      this.$router.push({ name: "Folder" });
+    }
   },
   mixins: [loggerMixin],
 };

@@ -1,28 +1,37 @@
 <template>
-    <nav>
-        <v-app-bar app dark>
-            <router-link to="/" class="text-decoration-none white--text" >
-                <v-toolbar-title class="display-1">
-                    <span class="font-weight-bold">Web</span>
-                    <span>App</span>
-                </v-toolbar-title>
-            </router-link>
-            <v-spacer></v-spacer>
-            <v-btn>
-                <span>Keluar</span>
-                <v-icon color="white" right>mdi-logout</v-icon>
-            </v-btn>
-        </v-app-bar>
-
-    </nav>
+  <nav>
+    <v-toolbar :color="colorTheme" dark>
+      <v-spacer></v-spacer>
+      <div class="hidden-sm-and-down">
+        Selamat datang, {{ user.username }}
+      </div>
+      <v-btn @click="logout" text>
+        <span>Logout</span>
+        <v-icon>mdi-exit-to-app</v-icon>
+      </v-btn>
+    </v-toolbar>
+  </nav>
 </template>
-
 <script>
+import { EventBus } from "@/bus";
+
 export default {
-    data(){
-        return{
-            drawer: false,
-        }
-    }
-}
+  name: "Navbar",
+  props: {
+    pageTitle: String,
+  },
+  computed: {
+    user() {
+      return this.$store.getters["auth/userData"];
+    },
+  },
+  data: () => ({
+    colorTheme: "primary",
+  }),
+  methods: {
+    logout() {
+      EventBus.$emit("onLogout");
+    },
+  },
+};
 </script>

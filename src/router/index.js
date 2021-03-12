@@ -1,15 +1,18 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import AuthRoutes from '../router/authRouter'
-import MainRoutes from '../router/mainRouter'
+import { landingRouter } from './landingRouter'
+import { authRouter } from './authRouter'
+import { mainRouter } from './mainRouter'
+import { fallbackRouter } from './404Router'
 
 Vue.use(VueRouter)
 
-var allRoutes = []
-
-allRoutes = allRoutes.concat(AuthRoutes, MainRoutes)
-
-const routes = allRoutes
+const routes = [
+  landingRouter,
+  authRouter,
+  mainRouter,
+  fallbackRouter
+]
 
 const router = new VueRouter({
   mode: 'history',

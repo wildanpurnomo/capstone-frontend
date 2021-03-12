@@ -119,7 +119,7 @@
 <script>
 import { EventBus } from "@/bus";
 import loggerMixin from "@/mixins/loggerMixin";
-import Snackbar from "@/components/basic/Snackbar";
+import Snackbar from "@/components/Snackbar";
 
 export default {
   components: { Snackbar },
@@ -155,7 +155,7 @@ export default {
   },
   computed: {
     folder() {
-      return this.$route.params.item;
+      return this.$store.getters["folder/folderData"];
     },
     docs() {
       return this.$store.getters["document/documentData"];
@@ -168,9 +168,10 @@ export default {
     async getDocument() {
       this.loading = true;
       try {
+        let folderId = this.$route.params.folderId;
         let response = await this.$store.dispatch(
           "document/getDocuments",
-          this.folder._id
+          folderId
         );
         if (response.status === 200) {
           this.errorMessage = "";
@@ -228,8 +229,8 @@ export default {
         documents: this.docs,
         folderName: this.folder.folderName,
       };
-      let id = this.$route.params.id;
-      this.$router.push({ name: "Result", params: { item, id } });
+      let id = this.$route.params.folderId;
+      this.$router.push({ name: "Result", params: { item: item, folderId: id } });
     },
     close() {
       this.dialog = false;

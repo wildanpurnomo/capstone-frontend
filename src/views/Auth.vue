@@ -16,7 +16,7 @@ export default {
       try {
         let response = await this.$store.dispatch("auth/authenticate");
         if (response.status === 200) {
-          this.$router.push({ name: 'MainView'});
+          this.$router.push({ name: 'Dashboard'});
         }
       } catch (error) {
         EventBus.$emit('onSessionEnd');
@@ -24,7 +24,8 @@ export default {
     },
   },
   created() {
-    if (this.user.username === "") {
+    let paramKeys = Object.keys(this.$route.params);
+    if (this.user.username === "" && paramKeys.length === 0) {
       this.authenticate();
     }
   },
