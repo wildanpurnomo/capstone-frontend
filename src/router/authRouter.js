@@ -1,19 +1,17 @@
-const authRouter = {
-    path: '/',
-    name: 'AuthView',
-    component: () => import('../views/AuthView.vue'),
+export const authRouter = {
+    path: '/auth',
+    redirect: '/auth/login',
+    component: () => import('@/views/Auth.vue'),
     children: [
         {
-            path: '',
-            name: 'AuthLogin',
-            component: () => import('../components/auth/AuthLogin.vue'),
+            path: '/auth/login',
+            name: 'Login',
+            component: () => import('@/views/partials/auth/Login.vue'),
         },
         {
-            path: '/register',
-            name: 'AuthRegister',
-            component: () => import('../components/auth/AuthRegister.vue'),
+            path: '/auth/register',
+            name: 'Register',
+            component: () => import('@/views/partials/auth/Register.vue'),
         },
     ]
 }
-
-export default authRouter

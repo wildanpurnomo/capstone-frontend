@@ -1,24 +1,22 @@
-const mainRouter = {
+export const mainRouter = {
     path: '/main',
-    name: 'MainView',
-    component: () => import('../views/MainView.vue'),
+    redirect: '/main/dashboard',
+    component: () => import('@/views/Main.vue'),
     children: [
         {
-            path: '',
+            path: '/main/dashboard',
             name: 'Dashboard',
-            component: () => import('../components/main/Dashboard')
+            component: () => import('@/views/partials/main/Dashboard')
         },
         {
-            path: '/folder/:id',
+            path: '/main/folder/:folderId',
             name: 'Folder',
-            component: () => import('../components/main/Folder')
+            component: () => import('@/views/partials/main/FolderDetail')
         },
         {
-            path: '/result/:id',
+            path: '/main/folder/analytic-result/:folderId',
             name: 'Result',
-            component: () => import('../components/main/Result')
+            component: () => import('@/views/partials/main/AnalyticResult')
         }
     ]
 }
-
-export default mainRouter

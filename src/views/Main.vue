@@ -1,22 +1,31 @@
 <template>
   <div>
-    <MainNavbar :pageTitle="currentPageName" />
+    <MainNavbar/>
     <div class="mb-3"></div>
     <router-view></router-view>
   </div>
 </template>
 <script>
-import MainNavbar from "@/components/main/MainNavbar.vue";
+import MainNavbar from "@/components/Navbar.vue";
 import { EventBus } from "@/bus";
 
 export default {
   name: "MainView",
+
   components: {
     MainNavbar,
   },
+
   data: () => ({
     currentPageName: "Home",
   }),
+
+  computed: {
+    user() {
+      return this.$store.getters["auth/userData"];
+    },
+  },
+
   methods: {
     async authenticate() {
       try {
@@ -37,23 +46,18 @@ export default {
     },
     redirectLogin(snackbarMessage) {
       this.$router.push({
-        name: "AuthLogin",
+        name: "Login",
         params: {
           snackbarMessage: snackbarMessage,
         },
       });
     },
   },
+
   created() {
-    EventBus.$on("onLogout", () => {
-      this.logout();
-    });
-    EventBus.$on("onSessionEnd", () => {
-      this.logout(true);
-    });
-    EventBus.$on("onAuthenticate", () => {
+    if (this.user.username === "") {
       this.authenticate();
-    });
+    }
   },
 };
 </script>
