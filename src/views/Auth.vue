@@ -22,12 +22,21 @@ export default {
         EventBus.$emit('onSessionEnd');
       }
     },
+
+    getOauthUrl() {
+      try {
+        this.$store.dispatch("auth/getOauthUrl");
+      } catch (error) {
+        EventBus.$emit('Failed to get OAuth Url');
+      }1
+    }
   },
   created() {
     let paramKeys = Object.keys(this.$route.params);
     if (this.user.username === "" && paramKeys.length === 0) {
       this.authenticate();
     }
+    this.getOauthUrl();
   },
 };
 </script>

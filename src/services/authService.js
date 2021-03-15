@@ -21,6 +21,10 @@ class AuthService extends BaseService {
     authenticate() {
         return this.sendAPIRequest(endpoints.authenticate, 'GET');
     }
+
+    getOauthUrl() {
+        return this.sendAPIRequest(endpoints.oauth, 'GET');
+    }
 }
 
 export default new AuthService();

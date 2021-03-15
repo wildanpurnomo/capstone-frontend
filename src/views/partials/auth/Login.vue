@@ -39,9 +39,10 @@
                 >
               </div>
               <div class="text-center">
-                <router-link :to="{ name: 'Register' }"
-                  >Register</router-link
-                >
+                <router-link :to="{ name: 'Register' }">Register</router-link>
+              </div>
+              <div class="text-center" :hidden="oauthUrl.length === 0">
+                <a :href="oauthUrl">Google Classroom</a>
               </div>
               <div class="red--text mt-8" :hidden="errorMessage.length === 0">
                 {{ errorMessage }}
@@ -71,6 +72,12 @@ export default {
     isPasswordShown: false,
     errorMessage: "",
   }),
+
+  computed: {
+    oauthUrl() {
+      return this.$store.getters["auth/oauthUrl"];
+    },
+  },
 
   methods: {
     async login() {

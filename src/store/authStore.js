@@ -1,7 +1,7 @@
 import AuthService from '@/services/authService';
 import UserModel from '@/models/UserModel';
 
-const initialAuthState = { userData: new UserModel() };
+const initialAuthState = { userData: new UserModel(), oauthUrl: "" };
 
 export const auth = {
     namespaced: true,
@@ -52,6 +52,16 @@ export const auth = {
                     },
                     error => { return Promise.reject(error); }
                 )
+        },
+        getOauthUrl({ commit }) {
+            return AuthService.getOauthUrl()
+                .then(
+                    response => {
+                        commit('oauthUrlSuccess', response.data.data.authUrl);
+                        return Promise.resolve(response);
+                    },
+                    error => { return Promise.reject(error); }
+                )
         }
     },
     mutations: {
@@ -61,10 +71,16 @@ export const auth = {
         logoutSuccess(state) {
             state.userData = initialAuthState.userData;
         },
+        oauthUrlSuccess(state, url) {
+            state.oauthUrl = url
+        }
     },
     getters: {
         userData: (state) => {
             return state.userData;
+        },
+        oauthUrl: (state) => {
+            return state.oauthUrl;
         }
     }
 }

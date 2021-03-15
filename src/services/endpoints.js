@@ -1,10 +1,11 @@
 export const endpoints = {
-    login: '/login',
-    register: '/register',
-    logout: '/logout',
-    authenticate: '/authenticate',
-    folder: '/folder',
-    documents: '/documents',
-    classroom: '/classroom',
-    analytics: '/analytics'
+    login: 'login',
+    register: 'register',
+    logout: 'logout',
+    authenticate: 'authenticate',
+    folder: 'folder',
+    documents: 'documents',
+    classroom: 'classroom',
+    analytics: 'analytics',
+    oauth: 'auth/oauth_url'
 }
