@@ -266,7 +266,6 @@ export default {
   },
   
   created() {
-    this.initialize();
     EventBus.$on("onAuthenticated", () => {
       this.initialize();
     });

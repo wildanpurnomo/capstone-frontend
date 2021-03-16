@@ -6,12 +6,16 @@ class ClassroomService extends BaseService{
         super();
     }
 
-    course(data){
-        return this.sendAPIRequest(endpoints.classroom, 'GET');
+    getCourseList(){
+        return this.sendAPIRequest(endpoints.classroomCourseList, 'GET');
     }
 
-    submission(){
-        return this.sendAPIRequest(endpoints.classroom, 'GET', data);
+    getCourseWorkList(courseId) {
+        return this.sendAPIRequest(endpoints.classroomCourseWorkList, 'GET', null, courseId);
+    }
+
+    getCourseSubmissionList(courseId, courseWorkId) {
+        return this.sendAPIRequest(endpoints.classroomCourseSubmissionList, 'GET', null, `${courseId}/${courseWorkId}`);
     }
 }
 

@@ -5,7 +5,9 @@ export const endpoints = {
     authenticate: 'authenticate',
     folder: 'folder',
     documents: 'documents',
-    classroom: 'classroom',
     analytics: 'analytics',
-    oauth: 'auth/oauth_url'
+    oauth: 'auth/oauth_url',
+    classroomCourseList: 'classroom/courses',
+    classroomCourseWorkList: 'classroom/courseworks/',
+    classroomCourseSubmissionList: 'classroom/submissions/'
 }

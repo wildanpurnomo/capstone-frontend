@@ -17,6 +17,21 @@ export const mainRouter = {
             path: '/main/folder/analytic-result/:folderId',
             name: 'Result',
             component: () => import('@/views/partials/main/AnalyticResult')
+        },
+        {
+            path: "/main/example/classroom-courses",
+            name: "ClassroomCourseList",
+            component: () => import('@/views/partials/main/ClassroomExCourseList')
+        },
+        {
+            path: "/main/example/classroom-courses/coursework/:courseName/:courseId",
+            name: "ClassroomCourseWorkList",
+            component: () => import('@/views/partials/main/ClassroomExCourseWorkList')
+        },
+        {
+            path: "/main/example/classroom-courses/submission/:courseWorkName/:courseId/:courseWorkId",
+            name: "ClassroomCourseWorkSubmissionList",
+            component: () => import('@/views/partials/main/ClassroomExCourseWorkSubmissionList')
         }
     ]
 }

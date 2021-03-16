@@ -4,6 +4,7 @@ import { auth } from './authStore'
 import { folder } from './folderStore'
 import { document } from './documentStore'
 import { analytics } from './analyticsStore'
+import { classroom } from './classroomStore'
 
 Vue.use(Vuex)
 
@@ -13,5 +14,6 @@ export default new Vuex.Store({
     folder,
     document,
     analytics,
+    classroom
   }
 })
