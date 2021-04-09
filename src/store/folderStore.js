@@ -1,7 +1,7 @@
 import FolderService from '@/services/folderService';
 import FolderModel from '@/models/folderModel';
 
-const folderState = { folderData: new FolderModel()};
+const folderState = { folderList: [], folderData: new FolderModel()};
 
 export const folder = {
     namespaced: true,
@@ -23,7 +23,7 @@ export const folder = {
             return FolderService.getFolder()
                 .then(
                     response => {
-                        commit('createSuccess', response.data.data.folderList);
+                        commit('onSuccessGetList', response.data.data.folderList);
                         return Promise.resolve(response);
                     },
                     error => {
@@ -63,11 +63,19 @@ export const folder = {
     mutations:{
         createSuccess(state, folderData){
             state.folderData = folderData;
+        },
+
+        onSuccessGetList(state, folderList) {
+            state.folderList = folderList;
         }
     },
     getters: {        
         folderData: (state) => {
             return state.folderData;
+        },
+
+        folderList: (state) => {
+            return state.folderList;
         }
     }
 }

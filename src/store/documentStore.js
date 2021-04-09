@@ -48,7 +48,7 @@ export const document = {
     },
     mutations: {
         uploadSuccess(state, documentData){
-            state.documentData = documentData;
+            state.documentData.concat(documentData);
         },
         getSuccess(state, documentData){
             state.documentData = documentData;

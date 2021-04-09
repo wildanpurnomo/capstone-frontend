@@ -6,15 +6,25 @@ export const mainRouter = {
         {
             path: '/main/dashboard',
             name: 'Dashboard',
-            component: () => import('@/views/partials/main/Dashboard')
+            component: () => import('@/views/partials/main/SelectMethod')
         },
         {
-            path: '/main/folder/:folderId',
-            name: 'Folder',
+            path: '/main/select-folder',
+            name: 'SelectFolder',
+            component: () => import('@/views/partials/main/SelectFolder')
+        },
+        {
+            path: '/main/folder-detail/:folderName/:folderId',
+            name: 'FolderDetail',
             component: () => import('@/views/partials/main/FolderDetail')
         },
         {
-            path: '/main/folder/analytic-result/:folderId',
+            path: '/main/folder/analytic-result/:folderName',
+            name: 'Result',
+            component: () => import('@/views/partials/main/AnalyticResult')
+        },
+        {
+            path: '/main/folder/analytic-detail/:folderName/:clusterIndex/',
             name: 'Result',
             component: () => import('@/views/partials/main/AnalyticResult')
         },

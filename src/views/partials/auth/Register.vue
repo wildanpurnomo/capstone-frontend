@@ -3,13 +3,9 @@
     <v-row>
       <v-col cols="12">
         <v-row justify="center">
-          <v-card class="pa-8" width="500">
+          <v-card class="pa-10 rounded-lg" width="500" color="#4F4F68">
             <v-row justify="center">
-              <div
-                class="mb-16 text-h3 font-weight-light blue--text text--lighten-2"
-              >
-                Register
-              </div>
+              <div class="mb-15 text-h3 white--text">Daftar</div>
             </v-row>
             <v-form ref="registerForm" v-model="isFormValid">
               <v-text-field
@@ -18,13 +14,7 @@
                 v-model="user.username"
                 :rules="this.usernameRules"
                 required
-              ></v-text-field>
-              <v-text-field
-                label="Email"
-                type="email"
-                v-model="user.email"
-                :rules="this.emailRules"
-                required
+                dark
               ></v-text-field>
               <v-text-field
                 v-model="user.password"
@@ -32,6 +22,7 @@
                 :append-icon="isPasswordShown ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="isPasswordShown ? 'text' : 'password'"
                 required
+                dark
                 :rules="passwordRules"
                 @click:append="isPasswordShown = !isPasswordShown"
               ></v-text-field>
@@ -41,14 +32,15 @@
                 :append-icon="isPasswordShown ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="isPasswordShown ? 'text' : 'password'"
                 required
+                dark
                 :rules="passwordConfirmationRules"
                 @click:append="isPasswordShown = !isPasswordShown"
               ></v-text-field>
               <div class="text-center mb-8">
                 <v-btn
                   type="submit"
-                  class="primary"
-                  width="100%"
+                  class="white--text red accent-2 rounded-xl"
+                  width="70%"
                   :disabled="!isFormValid || isFormLoading"
                   :loading="isFormLoading"
                   @click.prevent="register"
@@ -56,8 +48,17 @@
                 >
               </div>
               <div class="text-center">
-                <router-link :to="{ name: 'Login' }"
+                <router-link :to="{ name: 'Login' }" style="color: white"
                   >Kembali ke login</router-link
+                >
+              </div>
+              <div class="text-center white--text">atau</div>
+              <div
+                class="text-center white--text"
+                :hidden="oauthUrl.length === 0"
+              >
+                <a :href="oauthUrl" style="color: white"
+                  >Masuk dengan Google Classroom</a
                 >
               </div>
               <div class="h6 red--text" :hidden="errorMessage.length === 0">
@@ -85,6 +86,10 @@ export default {
           (!!v && v) === this.user.password || "Masukkan password yang sama.",
       ];
     },
+
+    oauthUrl() {
+      return this.$store.getters["auth/oauthUrl"];
+    },
   },
 
   data: () => ({
@@ -110,7 +115,7 @@ export default {
       }
     },
   },
-  
+
   mixins: [formInputMixin, loggerMixin],
 };
 </script>

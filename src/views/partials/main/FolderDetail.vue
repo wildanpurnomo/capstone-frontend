@@ -3,7 +3,7 @@
     <v-container>
       <v-card class="py-5 px-10" elevation="4">
         <h1 class="display-1 font-weight-bold text-center">Input Dokumen</h1>
-        <p class="text-center pb-3">Folder: {{ folder.folderName }}</p>
+        <p class="text-center pb-3">Folder: {{ this.$route.params.folderName }}</p>
 
         <v-form>
           <v-data-table
@@ -15,16 +15,6 @@
           >
             <template v-slot:top>
               <v-toolbar flat>
-                <v-text-field
-                  label="Toleransi kemiripan (%)"
-                  v-model="threshold"
-                  :rules="[rules.required, rules.numeric, rules.percent]"
-                  hide-details="auto"
-                  dense
-                  class="shrink"
-                  outlined
-                >
-                </v-text-field>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
                   <template v-slot:activator="{ on, attrs }">
@@ -162,9 +152,6 @@ export default {
     },
   },
   methods: {
-    async initialize() {
-      await this.getDocument();
-    },
     async getDocument() {
       this.loading = true;
       try {
@@ -186,8 +173,7 @@ export default {
     async upload() {
       this.loading = true;
       let formData = new FormData();
-      formData.set("creatorId", this.folder.creatorId);
-      formData.set("folderId", this.folder._id);
+      formData.set("folderId", this.$route.params.folderId);
       this.documentsUpload.forEach((item) => {
         formData.append("docs", item);
       });
@@ -195,6 +181,7 @@ export default {
         let response = await this.$store.dispatch("document/upload", formData);
         if (response.status === 200) {
           this.errorMessage = "";
+          this.getDocument()
         }
       } catch (error) {
         let message = this.decryptError(error);
@@ -223,14 +210,17 @@ export default {
       };
       return d.toLocaleDateString("id", option);
     },
-    submit() {
-      let item = {
-        threshold: this.threshold / 100,
-        documents: this.docs,
-        folderName: this.folder.folderName,
+    async submit() {
+      let request = {
+        documents: this.docs.map(item => {
+          return item.documentUrl;
+        })
       };
-      let id = this.$route.params.folderId;
-      this.$router.push({ name: "Result", params: { item: item, folderId: id } });
+      let response = await this.$store.dispatch("analytics/analyze", request);
+
+      if (response.status === 200) {
+        this.$router.push({ name: 'Result' })
+      }
     },
     close() {
       this.dialog = false;
@@ -248,7 +238,7 @@ export default {
     },
   },
   created() {
-    this.initialize();
+    this.getDocument();
   },
   mixins: [loggerMixin],
 };

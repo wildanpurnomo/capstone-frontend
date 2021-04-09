@@ -3,13 +3,9 @@
     <v-row>
       <v-col cols="12">
         <v-row justify="center">
-          <v-card class="pa-8" width="500">
+          <v-card class="pa-10 rounded-lg" width="500" color="#4F4F68">
             <v-row justify="center">
-              <div
-                class="mb-16 text-h3 font-weight-light blue--text text--lighten-2"
-              >
-                Login
-              </div>
+              <div class="mb-15 text-h3 white--text">Login</div>
             </v-row>
             <v-form ref="loginForm">
               <v-text-field
@@ -18,6 +14,7 @@
                 type="text"
                 append-icon="mdi-account"
                 required
+                dark
               ></v-text-field>
               <v-text-field
                 v-model="user.password"
@@ -25,24 +22,30 @@
                 :append-icon="isPasswordShown ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="isPasswordShown ? 'text' : 'password'"
                 required
+                dark
                 @click:append="isPasswordShown = !isPasswordShown"
               ></v-text-field>
-              <div class="text-center mb-8">
+              <div class="text-center ma-8">
                 <v-btn
-                  width="100%"
+                  width="70%"
                   type="submit"
-                  class="primary"
+                  class="white--text red accent-2 rounded-xl"
                   :disabled="isFormLoading"
                   :loading="isFormLoading"
                   @click.prevent="login"
-                  >Login</v-btn
+                  >Masuk</v-btn
                 >
               </div>
-              <div class="text-center">
-                <router-link :to="{ name: 'Register' }">Register</router-link>
+              <div class="text-center white--text">
+                Belum memiliki akun?
+                <router-link :to="{ name: 'Register' }" style="color: white">Register</router-link>
               </div>
-              <div class="text-center" :hidden="oauthUrl.length === 0">
-                <a :href="oauthUrl">Google Classroom</a>
+              <div class="text-center white--text">atau</div>
+              <div
+                class="text-center white--text"
+                :hidden="oauthUrl.length === 0"
+              >
+                <a :href="oauthUrl" style="color: white">Masuk dengan Google Classroom</a>
               </div>
               <div class="red--text mt-8" :hidden="errorMessage.length === 0">
                 {{ errorMessage }}

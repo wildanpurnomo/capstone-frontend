@@ -1,7 +1,6 @@
 import AnalyticsService from '@/services/analyticsService';
-import AnalyticsModel from '@/models/analyticsModel';
 
-const analyticsState = { analyticsData: new AnalyticsModel() };
+const analyticsState = { analyticsResult: [] };
 
 export const analytics = {
     namespaced: true,
@@ -22,12 +21,12 @@ export const analytics = {
     },
     mutations: {
         analyzeSuccess(state, data) {
-            state.analyticsData = data;
+            state.analyticsResult = data;
         }
     },
     getters: {
-        analyticsData: (state) => {
-            return state.analyticsData;
+        analyticsResult: (state) => {
+            return state.analyticsResult;
         }
     }
 }

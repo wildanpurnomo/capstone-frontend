@@ -26,7 +26,7 @@ export default {
     },
   },
   data: () => ({
-    colorTheme: "primary",
+    colorTheme: "#394867",
   }),
   methods: {
     logout() {
