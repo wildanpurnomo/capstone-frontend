@@ -36,7 +36,6 @@ export const folder = {
             return FolderService.edit(folderData, id)
                 .then(
                     response => {
-                        console.log(response);
                         commit('editSuccess', response.data.data.folderData); //later
                         return Promise.resolve(response);
                     },
@@ -50,7 +49,6 @@ export const folder = {
             return FolderService.delete(id)
                 .then(
                     response => {
-                        console.log(response);
                         commit('deleteSuccess'); //later
                         return Promise.resolve(response);
                     },

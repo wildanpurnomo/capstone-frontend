@@ -1,11 +1,8 @@
 <template>
-  <v-card>
+  <v-card outlined>
     <v-row class="pl-6 pr-4" style="cursor: pointer">
-      <h3 class="mt-4 mb-4">{{ folderTitle }}</h3>
-      <v-spacer></v-spacer>
-      <v-card-actions>
-        <v-btn icon color="#394867"> <v-icon large>mdi-dots-vertical</v-icon> </v-btn>
-      </v-card-actions>
+      <v-icon class="mr-1">mdi-folder</v-icon>
+      <h4 class="mt-4 mb-4">{{ folderTitle }}</h4>
     </v-row>
   </v-card>
 </template>
