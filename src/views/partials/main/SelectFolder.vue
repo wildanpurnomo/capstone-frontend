@@ -1,7 +1,7 @@
 <template>
   <v-container fill-height>
     <v-row>
-      <h1>Pilih Folder</h1>
+      <h1>Folder Saya</h1>
       <v-spacer></v-spacer>
       <div class="mt-auto" v-show="folderIndex !== -1">
         <v-btn icon @click="menuActionClick('delete')"><v-icon>mdi-trash-can-outline</v-icon></v-btn>
@@ -10,39 +10,40 @@
     </v-row>
 
     <v-row v-if="folderList.length !== 0">
-      <v-col cols="3" v-for="(item, index) in folderList" :key="index">
+      <v-col cols="6" sm="3" v-for="(item, index) in folderList" :key="index">
         <SelectFolderCard
           :folderTitle="item.folderName"
+          :folder="true"
           @contextmenu.prevent.native="show(item, $event)"
-          @click.native="selectFolder(item, index)"
+          @click.native="selectFolder(item)"
           @dblclick.native="toFolderDetail(item.folderName, item._id)"
           :class="{ selected: folderIndex===index }"
         />
       </v-col>
-        <v-menu
-          v-model="showMenu"
-          :position-x="x"
-          :position-y="y"
-          absolute
-          offset-y
-        >
-          <v-list>
-            <v-list-item
-              v-for="(menu, index) in menus"
-              :key="index"
-              link
-              @click="menuActionClick(menu.action)"
-            >
-              <v-list-item-icon class="mr-3">
-                <v-icon>{{ menu.icon }}</v-icon>
-              </v-list-item-icon>
+      <v-menu
+        v-model="showMenu"
+        :position-x="x"
+        :position-y="y"
+        absolute
+        offset-y
+      >
+        <v-list>
+          <v-list-item
+            v-for="(menu, index) in menus"
+            :key="index"
+            link
+            @click="menuActionClick(menu.action)"
+          >
+            <v-list-item-icon class="mr-3">
+              <v-icon>{{ menu.icon }}</v-icon>
+            </v-list-item-icon>
 
-              <v-list-item-content>
-                <v-list-item-title> {{ menu.title }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+            <v-list-item-content>
+              <v-list-item-title> {{ menu.title }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-row>
 
     <v-row v-else>
@@ -54,13 +55,34 @@
       </v-col>
     </v-row>
 
+    <v-row v-if="courseList.length !== 0">
+      <v-divider></v-divider>
+    </v-row>
+
+    <v-row v-if="courseList.length !== 0">
+      <h1>Kelas Google Classroom</h1>
+      <v-spacer></v-spacer>
+    </v-row>
+
+    <v-row v-if="courseList.length !== 0">
+      <v-col cols="6" sm="3" v-for="(item, index) in courseList" :key="index">
+        <SelectFolderCard
+          :folderTitle="item.name"
+          :googleClass="true"
+          @click.native="selectClass(index)"
+          @dblclick.native="showClassWork(item)"
+          :class="{ selected: classIndex===index }"
+        />
+      </v-col>
+    </v-row>
+
     <FABAdd
-      @click.native="isDialogShown = true"
+      @click.native="isDialogAddShown = true"
       tooltipMessage="Tambah Folder"
     />
 
     <v-dialog 
-      v-model="isDialogShown" 
+      v-model="isDialogAddShown" 
       max-width="500px"
       @click:outside="close"
     >
@@ -73,6 +95,7 @@
           <v-container>
             <v-text-field
               v-model="newFolderName"
+              @keyup.enter="editFolder"
               label="Nama Folder"
             ></v-text-field>
           </v-container>
@@ -80,9 +103,44 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text @click="close">Batal</v-btn>
-          <v-btn text @click="createFolder" v-if="folderIndex === -1">Simpan</v-btn>
-          <v-btn text @click="renameFolder" v-else>Simpan</v-btn>
+          <v-btn text @click="editFolder">Simpan</v-btn>
         </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="isDialogWorkShown"
+      max-width="500px"
+      transition="dialog-bottom-transition"
+    >
+      <v-card>
+        <v-btn 
+          icon
+          @click="isDialogWorkShown=false"
+          plain
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+        <v-card-title class="pt-0">
+          <span class="headline mx-auto">{{ className }}</span>
+        </v-card-title>
+        <v-card-text>
+          <v-progress-linear
+            indeterminate
+            color="#394867"
+            :active="loading"
+          ></v-progress-linear>
+          <v-row v-for="(item, index) in courseWorkList" :key="index">
+            <v-col cols="12" class="py-1 px-0">
+            <SelectFolderCard
+              :folderTitle="item.title"
+              :clipboard="true"
+              :creationTime="item.creationTime"
+              @click.native="toSubmissionDetail(item)"
+            />
+            </v-col>
+          </v-row>
+        </v-card-text>
       </v-card>
     </v-dialog>
 
@@ -108,6 +166,7 @@
 <script>
 import SelectFolderCard from "@/components/SelectFolderCard";
 import FABAdd from "@/components/FABAdd";
+import BackBtn from "@/components/BackBtn";
 import { EventBus } from "@/bus";
 import EmptyState from "@/components/EmptyState";
 import folderModel from "@/models/folderModel";
@@ -129,16 +188,27 @@ export default {
       this.$store.dispatch("folder/getFolder");
     },
 
-    async createFolder() {
+    async editFolder() {
       this.folderModel.folderName = this.newFolderName;
+      let message = '';
+      let response = Object;
       try {
-        let response = await this.$store.dispatch(
-          "folder/create",
-          this.folderModel
-        );
+        if(this.folderIndex === -1){
+          response = await this.$store.dispatch(
+            "folder/create",
+            this.folderModel
+          );
+          message = 'Folder Berhasil Ditambahkan'
+        } else {
+          response = await this.$store.dispatch(
+            "folder/edit",
+            this.folderModel
+          );
+          message = 'Berhasil Mengganti Nama Folder'
+        }
         if (response.status === 200) {
           this.getFolder();
-          EventBus.$emit("onShowSnackbar", "Folder Berhasil Ditambahkan");
+          EventBus.$emit("onShowSnackbar", message);
         }
       } catch (error) {
         let message = this.decryptError(error);
@@ -148,6 +218,7 @@ export default {
     },
 
     selectFolder(item) {
+      this.classIndex = -1;
       this.folderModel = item;
       this.folderIndex = this.folderList.indexOf(this.folderModel);
     },
@@ -166,28 +237,10 @@ export default {
     menuActionClick(action) {
       this.newFolderName = this.folderModel.folderName;
       if (action === 'changeName'){
-        this.isDialogShown = true;
+        this.isDialogAddShown = true;
       } else if (action === 'delete'){
         this.isDialogDeleteShown = true;
       }
-    },
-
-    async renameFolder() {
-      this.folderModel.folderName = this.newFolderName;
-      try {
-        let response = await this.$store.dispatch(
-          "folder/edit",
-          this.folderModel
-        );
-        if (response.status === 200) {
-          this.getFolder();
-          EventBus.$emit("onShowSnackbar", "Berhasil Ganti Nama Folder");
-        }
-      } catch (error) {
-        let message = this.decryptError(error);
-        EventBus.$emit("onShowSnackbar", message);
-      }
-      this.close();
     },
 
     async deleteFolder() {
@@ -208,23 +261,75 @@ export default {
     },
 
     close() {
-      this.isDialogShown = false; 
+      this.isDialogAddShown = false; 
       this.isDialogDeleteShown = false;
       this.$nextTick(() => {
         this.folderModel = Object.assign({}, folderModel);
         this.newFolderName = '';
         this.folderIndex = -1;
       });
-    }
+    },
+
+    selectClass(index) {
+      this.folderIndex = -1;
+      this.classIndex = index;
+    },
+
+    showClassWork(item) {
+      this.getCourseWorkList(item);
+      this.className = item.name;
+      this.isDialogWorkShown = true;
+    },
+
+    toSubmissionDetail(item) {
+      let folderId = item.id;
+      let folderName = item.title;
+      this.$router.push({
+        name: "FolderDetail",
+        params: { folderId, folderName },
+        query: { method: this.$route.query.method },
+      });
+    },
+
+    async getCourseList() {
+      this.loading = true
+      try {
+        let response = await this.$store.dispatch("classroom/getCourseList");
+        if (response.status === 200){
+          this.loading = false;
+        }
+      } catch (error) {
+        let message = this.decryptError(error);
+        EventBus.$emit("onShowSnackbar", message);
+      }
+    },
+
+    async getCourseWorkList(item) {
+      this.loading = true
+      try {
+        let response = await this.$store.dispatch("classroom/getCourseWorkList", item.id);
+        if (response.status === 200){
+          this.loading = false;
+        }
+      } catch (error) {
+        let message = this.decryptError(error);
+        EventBus.$emit("onShowSnackbar", message);
+      }
+    },
   },
 
   data() {
     return {
-      isDialogShown: false,
+      isDialogAddShown: false,
       isDialogDeleteShown: false,
+      isDialogWorkShown: false,
+      isDialogDetailShown: false,
+      loading: false,
       folderModel: new folderModel(),
       folderIndex: -1,
+      classIndex: -1,
       newFolderName: "",
+      className: "",
       addMenus: [
         { title: 'Folder Baru', icon: 'mdi-folder-plus-outline', action: 'new' },
         { title: 'Google Classroom', icon: 'mdi-google-classroom', action: 'gClass' },
@@ -248,14 +353,30 @@ export default {
     user() {
       return this.$store.getters["auth/userData"];
     },
+
+    courseList() {
+      let courses = this.$store.getters["classroom/courseList"];
+      let ownCourse = [];
+      for(let course in courses){
+        if(courses[course].ownerId === this.user._id){
+          ownCourse.push(courses[course]);
+        }
+      }
+      return ownCourse;
+    },
+
+    courseWorkList() {
+      return this.$store.getters["classroom/courseWorkList"];
+    },
   },
 
   created() {
     this.folderModel.creatorId = this.user._id;
     this.getFolder();
+    this.getCourseList();
   },
 
-  components: { SelectFolderCard, FABAdd, EmptyState, Snackbar },
+  components: { SelectFolderCard, FABAdd, EmptyState, Snackbar, BackBtn },
 };
 </script>
 
