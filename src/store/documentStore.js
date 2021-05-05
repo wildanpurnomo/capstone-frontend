@@ -1,17 +1,16 @@
 import DocumentService from '@/services/documentService';
-//import DocumentModel from '@/models/documentModel';
 
-const documentState = { documentData: []};
+const documentState = { documentData: {} };
 
 export const document = {
     namespaced: true,
     state: documentState,
-    actions:{
-        upload({ commit }, documentData){
+    actions: {
+        upload({ commit }, documentData) {
             return DocumentService.upload(documentData)
                 .then(
                     response => {
-                        commit('uploadSuccess', response.data.data.bucketData);
+                        commit('doNothing');
                         return Promise.resolve(response);
                     },
                     error => {
@@ -19,25 +18,25 @@ export const document = {
                     }
                 )
         },
-        getDocuments({ commit }, folderId){
-            let id = "/" + folderId;
-            return DocumentService.getDocuments(id)
+        getDocuments({ commit }, folderSlug) {
+            commit('resetDocumentdata');
+            let path = "/" + folderSlug;
+            return DocumentService.getDocuments(path)
                 .then(
                     response => {
                         commit('getSuccess', response.data.data.bucketData);
                         return Promise.resolve(response);
                     },
-                    error =>{
+                    error => {
                         return Promise.reject(error);
                     }
                 )
         },
-        delete({ commit }, documentData){
-            let id = documentData._id;
-            return DocumentService.delete(id)
+        delete({ commit }, documentId) {
+            return DocumentService.delete(`/${documentId}`)
                 .then(
                     response => {
-                        commit('', response.data.data);
+                        commit(`doNothing`);
                         return Promise.resolve(response);
                     },
                     error => {
@@ -47,12 +46,13 @@ export const document = {
         }
     },
     mutations: {
-        uploadSuccess(state, documentData){
-            state.documentData.concat(documentData);
-        },
-        getSuccess(state, documentData){
+        getSuccess(state, documentData) {
             state.documentData = documentData;
-        }
+        },
+        resetDocumentdata(state) {
+            state.documentData = {};
+        },
+        doNothing() { }
     },
     getters: {
         documentData: (state) => {

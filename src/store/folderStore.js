@@ -1,17 +1,16 @@
 import FolderService from '@/services/folderService';
-import FolderModel from '@/models/folderModel';
 
-const folderState = { folderList: [], folderData: new FolderModel()};
+const folderState = { folderList: [] };
 
 export const folder = {
     namespaced: true,
     state: folderState,
-    actions:{
-        create({ commit }, folderData){
+    actions: {
+        create({ commit }, folderData) {
             return FolderService.addNew(folderData)
                 .then(
                     response => {
-                        commit('createSuccess', response.data.data.folderData);
+                        commit('doNothing');
                         return Promise.resolve(response);
                     },
                     error => {
@@ -19,7 +18,7 @@ export const folder = {
                     }
                 )
         },
-        getFolder({ commit }){
+        getFolder({ commit }) {
             return FolderService.getFolder()
                 .then(
                     response => {
@@ -31,12 +30,12 @@ export const folder = {
                     }
                 )
         },
-        edit({ commit }, folderData){
+        edit({ commit }, folderData) {
             let id = "/" + folderData._id;
             return FolderService.edit(folderData, id)
                 .then(
                     response => {
-                        commit('editSuccess', response.data.data.folderData); //later
+                        commit('doNothing', response.data.data.folderData);
                         return Promise.resolve(response);
                     },
                     error => {
@@ -44,12 +43,12 @@ export const folder = {
                     }
                 )
         },
-        delete({ commit }, folderData){
-            let id = "/" + folderData._id;
+        delete({ commit }, folderId) {
+            let id = "/" + folderId;
             return FolderService.delete(id)
                 .then(
                     response => {
-                        commit('deleteSuccess'); //later
+                        commit('doNothing');
                         return Promise.resolve(response);
                     },
                     error => {
@@ -58,20 +57,14 @@ export const folder = {
                 );
         }
     },
-    mutations:{
-        createSuccess(state, folderData){
-            state.folderData = folderData;
-        },
-
+    mutations: {
         onSuccessGetList(state, folderList) {
             state.folderList = folderList;
-        }
-    },
-    getters: {        
-        folderData: (state) => {
-            return state.folderData;
         },
 
+        doNothing() { }
+    },
+    getters: {
         folderList: (state) => {
             return state.folderList;
         }

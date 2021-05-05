@@ -11,12 +11,12 @@ export default {
             }
         },
         decryptError(error) {
-            if (error.response) {
-                let message = error.response.data.data.message
-                this.logIfDebug(`Error from ${error.response.config.url}: ${message}`);
+            this.logIfDebug(`Error: ${error}`);
+            try {
+                let message = error.response.data.data.message;
                 return message;
-            } else {
-                return "Terjadi kesalahan.";
+            } catch (error) {
+                return "Terjadi Kesalahan";
             }
         }
     }

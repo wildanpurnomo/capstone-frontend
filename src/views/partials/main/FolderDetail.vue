@@ -3,12 +3,14 @@
     <v-container>
       <v-card class="py-5 px-10" elevation="4">
         <h1 class="display-1 font-weight-bold text-center">Input Dokumen</h1>
-        <p class="text-center pb-3">Folder: {{ this.$route.params.folderName }}</p>
+        <p class="text-center pb-3">
+          Folder: {{ convertSlugIntoTitleCase(this.$route.params.folderSlug) }}
+        </p>
 
         <v-form>
           <v-data-table
             :headers="headers"
-            :items="docs"
+            :items="docs.documents"
             :items-per-page="15"
             :loading="loading"
             loading-text="Sedang mengambil data"
@@ -87,7 +89,7 @@
             </template>
 
             <template v-slot:[`item.updatedAt`]="{ value }">
-              <p>{{ dateToString(value) }}</p>
+              <p>{{ utcToIndonesiaFormat(value) }}</p>
             </template>
 
             <template v-slot:no-data>
@@ -109,10 +111,13 @@
 <script>
 import { EventBus } from "@/bus";
 import loggerMixin from "@/mixins/loggerMixin";
+import slugMixin from "@/mixins/slugMixin";
+import dateMixin from "@/mixins/dateMixin";
 import Snackbar from "@/components/Snackbar";
 
 export default {
   components: { Snackbar },
+
   data() {
     return {
       editedItem: new FormData(),
@@ -123,6 +128,7 @@ export default {
       errorMessage: "",
       editedIndex: -1,
       documentsUpload: [],
+      toBeDeletedDocument: {},
       headers: [
         { text: "Nama Dokumen", value: "documentOriginalName" },
         { text: "Tanggal Diunggah", value: "updatedAt" },
@@ -135,30 +141,35 @@ export default {
       },
     };
   },
+
   watch: {
     dialog(val) {
       val || this.close();
     },
+
     dialogDelete(val) {
       val || this.closeDelete();
     },
   },
+
   computed: {
     folder() {
       return this.$store.getters["folder/folderData"];
     },
+
     docs() {
       return this.$store.getters["document/documentData"];
     },
   },
+
   methods: {
     async getDocument() {
       this.loading = true;
       try {
-        let folderId = this.$route.params.folderId;
+        let folderSlug = this.$route.params.folderSlug;
         let response = await this.$store.dispatch(
           "document/getDocuments",
-          folderId
+          folderSlug
         );
         if (response.status === 200) {
           this.errorMessage = "";
@@ -170,10 +181,11 @@ export default {
         EventBus.$emit("onShowSnackbar", message);
       }
     },
+
     async upload() {
       this.loading = true;
       let formData = new FormData();
-      formData.set("folderId", this.$route.params.folderId);
+      formData.set("folderId", this.docs.folderId);
       this.documentsUpload.forEach((item) => {
         formData.append("docs", item);
       });
@@ -181,7 +193,7 @@ export default {
         let response = await this.$store.dispatch("document/upload", formData);
         if (response.status === 200) {
           this.errorMessage = "";
-          this.getDocument()
+          this.getDocument();
         }
       } catch (error) {
         let message = this.decryptError(error);
@@ -190,38 +202,52 @@ export default {
       this.loading = false;
       this.close();
     },
+
     deleteItem(item) {
-      this.editedIndex = this.docs.indexOf(item);
-      this.editedItem = Object.assign({}, item);
+      this.toBeDeletedDocument = item;
       this.dialogDelete = true;
     },
+
     async deleteItemConfirm() {
-      console.log("delete on progress");
-      //deleteItem
+      try {
+        let response = await this.$store.dispatch("document/delete", this.toBeDeletedDocument._id);
+
+        if (response.status === 200) {
+          this.getDocument();
+        }
+      } catch (error) {
+        let message = this.decryptError(error);
+        this.loading = false;
+        EventBus.$emit("onShowSnackbar", message);
+      }
+
       this.closeDelete();
     },
-    dateToString(date) {
-      var d = new Date(date);
-      var option = {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      };
-      return d.toLocaleDateString("id", option);
-    },
-    async submit() {
-      let request = {
-        documents: this.docs.map(item => {
-          return item.documentUrl;
-        })
-      };
-      let response = await this.$store.dispatch("analytics/analyze", request);
 
-      if (response.status === 200) {
-        this.$router.push({ name: 'Result' })
+    async submit() {
+      try {
+        EventBus.$emit("onShowSnackbar", "Melakukan cek kemiripan...");
+        let request = {
+          documents: this.docs.documents.map((item) => {
+            return item.documentUrl;
+          }),
+        };
+
+        let response = await this.$store.dispatch("analytics/analyze", request);
+
+        if (response.status === 200) {
+          this.$router.push({
+            name: "Result",
+            params: { folderSlug: this.$route.params.folderSlug },
+          });
+        }
+      } catch (error) {
+        let message = this.decryptError(error);
+        this.loading = false;
+        EventBus.$emit("onShowSnackbar", message);
       }
     },
+
     close() {
       this.dialog = false;
       this.$nextTick(() => {
@@ -229,6 +255,7 @@ export default {
         this.editedIndex = -1;
       });
     },
+
     closeDelete() {
       this.dialogDelete = false;
       this.$nextTick(() => {
@@ -237,9 +264,11 @@ export default {
       });
     },
   },
+
   created() {
     this.getDocument();
   },
-  mixins: [loggerMixin],
+
+  mixins: [loggerMixin, slugMixin, dateMixin],
 };
 </script>

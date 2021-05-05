@@ -7,15 +7,14 @@
           v-for="(item, index) in analytics"
           :key="index"
           style="cursor: pointer"
+          @click="toAnalyticsDetail(index)"
         >
           <v-card>
             <v-card-title
               >Tingkat Kemiripan {{ item.clusterMin }} -
               {{ item.clusterMax }}</v-card-title
             >
-            <v-card-text
-              >Sebanyak {{ item.pairingCount }} Kasus</v-card-text
-            >
+            <v-card-text>Sebanyak {{ item.pairingCount }} Kasus</v-card-text>
           </v-card>
         </v-col>
       </v-row>
@@ -30,9 +29,7 @@ import { EventBus } from "@/bus";
 
 export default {
   components: { Snackbar },
-  data() {
-    return {};
-  },
+
   computed: {
     analytics() {
       let raw = this.$store.getters["analytics/analyticsResult"];
@@ -41,8 +38,19 @@ export default {
       });
     },
   },
-  methods: {},
   
+  methods: {
+    toAnalyticsDetail(clusterIndex) {
+      this.$router.push({
+        name: "ResultDetail",
+        params: {
+          folderSlug: this.$route.params.folderSlug,
+          clusterIndex: clusterIndex,
+        },
+      });
+    },
+  },
+
   created() {
     if (this.analytics.length === 0) {
       this.$router.push({ name: "Dashboard" });

@@ -7,15 +7,15 @@ class DocumentService extends BaseService {
     }
 
     upload(data) {
-        return this.sendAPIRequest(endpoints.documents, 'POST', data, undefined, { headers: { 'Content-Type': 'multipart/form-data' } });
+        return this.sendAPIRequest(endpoints.uploadDocuments, 'POST', data, undefined, { headers: { 'Content-Type': 'multipart/form-data' } });
     }
 
-    getDocuments(id) {
-        return this.sendAPIRequest(endpoints.documents, 'GET', undefined, id);
+    getDocuments(folderSlug) {
+        return this.sendAPIRequest(endpoints.browseDocuments, 'GET', undefined, folderSlug);
     }
 
-    delete(data) {
-        return this.sendAPIRequest(endpoints.documents, 'DELETE', undefined, data);
+    delete(documentId) {
+        return this.sendAPIRequest(endpoints.deleteDocuments, 'DELETE', undefined, documentId);
     }
 }
 

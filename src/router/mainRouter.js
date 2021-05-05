@@ -14,19 +14,24 @@ export const mainRouter = {
             component: () => import('@/views/partials/main/SelectFolder')
         },
         {
-            path: '/main/folder-detail/:folderName/:folderId',
+            path: '/main/folder-detail/:folderSlug',
             name: 'FolderDetail',
             component: () => import('@/views/partials/main/FolderDetail')
         },
         {
-            path: '/main/folder/analytic-result/:folderName',
+            path: '/main/analytic-result/:folderSlug',
             name: 'Result',
             component: () => import('@/views/partials/main/AnalyticResult')
         },
         {
-            path: '/main/folder/analytic-detail/:folderName/:clusterIndex/',
-            name: 'Result',
-            component: () => import('@/views/partials/main/AnalyticResult')
+            path: '/main/analytic-detail/:folderSlug/:clusterIndex/',
+            name: 'ResultDetail',
+            component: () => import('@/views/partials/main/AnalyticsDetail')
+        },
+        {
+            path: '/main/browse-similarity/:folderSlug/:tableIndex',
+            name: 'BrowseSimilarity',
+            component: () => import('@/views/partials/main/BrowseSimilarity')
         },
         {
             path: "/main/example/classroom-courses",

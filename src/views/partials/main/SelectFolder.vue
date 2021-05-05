@@ -4,8 +4,12 @@
       <h1>Folder Saya</h1>
       <v-spacer></v-spacer>
       <div class="mt-auto" v-show="folderIndex !== -1">
-        <v-btn icon @click="menuActionClick('delete')"><v-icon>mdi-trash-can-outline</v-icon></v-btn>
-        <v-btn icon @click="menuActionClick('changeName')"><v-icon>mdi-pencil-outline</v-icon></v-btn>
+        <v-btn icon @click="menuActionClick('delete')"
+          ><v-icon>mdi-trash-can-outline</v-icon></v-btn
+        >
+        <v-btn icon @click="menuActionClick('changeName')"
+          ><v-icon>mdi-pencil-outline</v-icon></v-btn
+        >
       </div>
     </v-row>
 
@@ -17,7 +21,7 @@
           @contextmenu.prevent.native="show(item, $event)"
           @click.native="selectFolder(item)"
           @dblclick.native="toFolderDetail(item.folderName, item._id)"
-          :class="{ selected: folderIndex===index }"
+          :class="{ selected: folderIndex === index }"
         />
       </v-col>
       <v-menu
@@ -71,7 +75,7 @@
           :googleClass="true"
           @click.native="selectClass(index)"
           @dblclick.native="showClassWork(item)"
-          :class="{ selected: classIndex===index }"
+          :class="{ selected: classIndex === index }"
         />
       </v-col>
     </v-row>
@@ -81,14 +85,16 @@
       tooltipMessage="Tambah Folder"
     />
 
-    <v-dialog 
-      v-model="isDialogAddShown" 
+    <v-dialog
+      v-model="isDialogAddShown"
       max-width="500px"
       @click:outside="close"
     >
       <v-card>
         <v-card-title>
-          <span class="headline" v-if="folderIndex === -1">Masukkan Nama Folder Baru</span>
+          <span class="headline" v-if="folderIndex === -1"
+            >Masukkan Nama Folder Baru</span
+          >
           <span class="headline" v-else>Ganti Nama Folder</span>
         </v-card-title>
         <v-card-text>
@@ -114,11 +120,7 @@
       transition="dialog-bottom-transition"
     >
       <v-card>
-        <v-btn 
-          icon
-          @click="isDialogWorkShown=false"
-          plain
-        >
+        <v-btn icon @click="isDialogWorkShown = false" plain>
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-card-title class="pt-0">
@@ -132,12 +134,12 @@
           ></v-progress-linear>
           <v-row v-for="(item, index) in courseWorkList" :key="index">
             <v-col cols="12" class="py-1 px-0">
-            <SelectFolderCard
-              :folderTitle="item.title"
-              :clipboard="true"
-              :creationTime="item.creationTime"
-              @click.native="toSubmissionDetail(item)"
-            />
+              <SelectFolderCard
+                :folderTitle="item.title"
+                :clipboard="true"
+                :creationTime="item.creationTime"
+                @click.native="toSubmissionDetail(item)"
+              />
             </v-col>
           </v-row>
         </v-card-text>
@@ -150,7 +152,11 @@
       @click:outside="close"
     >
       <v-card>
-        <v-card-title><span class="headline mx-auto">Hapus Folder {{ newFolderName }}?</span></v-card-title>
+        <v-card-title
+          ><span class="headline mx-auto"
+            >Hapus Folder {{ newFolderName }}?</span
+          ></v-card-title
+        >
         <v-card-actions>
           <v-btn text @click="close">Batal</v-btn>
           <v-spacer></v-spacer>
@@ -159,6 +165,20 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="isDeleteDialogShown" max-width="500px">
+      <v-card>
+        <v-card-title
+          >Anda akan menghapus {{ folderModel.folderName }}?</v-card-title
+        >
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="isDeleteDialogShown = false"
+            >Batal</v-btn
+          >
+          <v-btn color="blue darken-1" text @click="deleteFolder">Hapus</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <Snackbar :duration="3000" />
   </v-container>
 </template>
@@ -166,45 +186,104 @@
 <script>
 import SelectFolderCard from "@/components/SelectFolderCard";
 import FABAdd from "@/components/FABAdd";
-import BackBtn from "@/components/BackBtn";
 import { EventBus } from "@/bus";
 import EmptyState from "@/components/EmptyState";
 import folderModel from "@/models/folderModel";
 import Snackbar from "@/components/Snackbar";
+import loggerMixin from "@/mixins/loggerMixin";
 
 export default {
   name: "SelectFolder",
 
+  data() {
+    return {
+      isDialogShown: false,
+      isDeleteDialogShown: false,
+      folderModel: new folderModel(),
+      isDialogAddShown: false,
+      isDialogDeleteShown: false,
+      isDialogWorkShown: false,
+      isDialogDetailShown: false,
+      loading: false,
+      folderIndex: -1,
+      classIndex: -1,
+      newFolderName: "",
+      className: "",
+      addMenus: [
+        {
+          title: "Folder Baru",
+          icon: "mdi-folder-plus-outline",
+          action: "new",
+        },
+        {
+          title: "Google Classroom",
+          icon: "mdi-google-classroom",
+          action: "gClass",
+        },
+      ],
+      showMenu: false,
+      editedItem: Object,
+      x: 0,
+      y: 0,
+      menus: [
+        {
+          title: "Ganti nama",
+          icon: "mdi-pencil-outline",
+          action: "changeName",
+        },
+        { title: "Hapus", icon: "mdi-trash-can-outline", action: "delete" },
+      ],
+    };
+  },
+
   methods: {
-    toFolderDetail(folderName, folderId) {
+    toFolderDetail(folderName) {
       this.$router.push({
         name: "FolderDetail",
-        params: { folderId, folderName },
+        params: {
+          folderSlug: folderName.trim().replace(/\s+/g, "-").toLowerCase(),
+        },
         query: { method: this.$route.query.method },
       });
     },
 
+    resetForm() {
+      this.folderModel = {};
+    },
+
     getFolder() {
       this.$store.dispatch("folder/getFolder");
+      this.resetForm();
+    },
+
+    handleOnModalFormSubmit() {
+      if (
+        this.folderModel.folderId === undefined ||
+        this.folderModel.folderId === null
+      ) {
+        this.createFolder();
+      } else {
+        this.updateFolder();
+      }
     },
 
     async editFolder() {
       this.folderModel.folderName = this.newFolderName;
-      let message = '';
+      let message = "";
       let response = Object;
       try {
-        if(this.folderIndex === -1){
+        if (this.folderIndex === -1) {
           response = await this.$store.dispatch(
             "folder/create",
             this.folderModel
           );
-          message = 'Folder Berhasil Ditambahkan'
+          message = "Folder Berhasil Ditambahkan";
         } else {
           response = await this.$store.dispatch(
             "folder/edit",
             this.folderModel
           );
-          message = 'Berhasil Mengganti Nama Folder'
+          message = "Berhasil Mengganti Nama Folder";
         }
         if (response.status === 200) {
           this.getFolder();
@@ -230,42 +309,25 @@ export default {
       this.x = e.clientX;
       this.y = e.clientY;
       this.$nextTick(() => {
-        this.showMenu = true
+        this.showMenu = true;
       });
     },
 
     menuActionClick(action) {
       this.newFolderName = this.folderModel.folderName;
-      if (action === 'changeName'){
+      if (action === "changeName") {
         this.isDialogAddShown = true;
-      } else if (action === 'delete'){
+      } else if (action === "delete") {
         this.isDialogDeleteShown = true;
       }
     },
 
-    async deleteFolder() {
-      try {
-        let response = await this.$store.dispatch(
-          "folder/delete",
-          this.folderModel
-        );
-        if (response.status === 200) {
-          this.getFolder();
-          EventBus.$emit("onShowSnackbar", "Berhasil Menghapus Folder");
-        }
-      } catch (error) {
-        let message = this.decryptError(error);
-        EventBus.$emit("onShowSnackbar", message);
-      }
-      this.close();
-    },
-
     close() {
-      this.isDialogAddShown = false; 
+      this.isDialogAddShown = false;
       this.isDialogDeleteShown = false;
       this.$nextTick(() => {
         this.folderModel = Object.assign({}, folderModel);
-        this.newFolderName = '';
+        this.newFolderName = "";
         this.folderIndex = -1;
       });
     },
@@ -292,10 +354,10 @@ export default {
     },
 
     async getCourseList() {
-      this.loading = true
+      this.loading = true;
       try {
         let response = await this.$store.dispatch("classroom/getCourseList");
-        if (response.status === 200){
+        if (response.status === 200) {
           this.loading = false;
         }
       } catch (error) {
@@ -305,10 +367,13 @@ export default {
     },
 
     async getCourseWorkList(item) {
-      this.loading = true
+      this.loading = true;
       try {
-        let response = await this.$store.dispatch("classroom/getCourseWorkList", item.id);
-        if (response.status === 200){
+        let response = await this.$store.dispatch(
+          "classroom/getCourseWorkList",
+          item.id
+        );
+        if (response.status === 200) {
           this.loading = false;
         }
       } catch (error) {
@@ -316,33 +381,40 @@ export default {
         EventBus.$emit("onShowSnackbar", message);
       }
     },
-  },
 
-  data() {
-    return {
-      isDialogAddShown: false,
-      isDialogDeleteShown: false,
-      isDialogWorkShown: false,
-      isDialogDetailShown: false,
-      loading: false,
-      folderModel: new folderModel(),
-      folderIndex: -1,
-      classIndex: -1,
-      newFolderName: "",
-      className: "",
-      addMenus: [
-        { title: 'Folder Baru', icon: 'mdi-folder-plus-outline', action: 'new' },
-        { title: 'Google Classroom', icon: 'mdi-google-classroom', action: 'gClass' },
-      ],
-      showMenu: false,
-      editedItem: Object,
-      x: 0,
-      y: 0,
-      menus: [
-        { title: 'Ganti nama', icon: 'mdi-pencil-outline', action: 'changeName' },
-        { title: 'Hapus', icon: 'mdi-trash-can-outline', action: 'delete' },
-      ],
-    };
+    async updateFolder() {
+      try {
+        let response = await this.$store.dispatch(
+          "folder/edit",
+          this.folderModel
+        );
+        if (response.status === 200) {
+          this.getFolder();
+          EventBus.$emit("onShowSnackbar", "Folder Berhasil Disunting");
+        }
+      } catch (error) {
+        let message = this.decryptError(error);
+        EventBus.$emit("onShowSnackbar", message);
+      }
+      this.isDialogShown = false;
+    },
+
+    async deleteFolder() {
+      try {
+        let response = await this.$store.dispatch(
+          "folder/delete",
+          this.folderModel._id
+        );
+        if (response.status === 200) {
+          this.getFolder();
+          EventBus.$emit("onShowSnackbar", "Folder Berhasil Dihapus");
+        }
+      } catch (error) {
+        let message = this.decryptError(error);
+        EventBus.$emit("onShowSnackbar", message);
+      }
+      this.isDeleteDialogShown = false;
+    },
   },
 
   computed: {
@@ -357,8 +429,8 @@ export default {
     courseList() {
       let courses = this.$store.getters["classroom/courseList"];
       let ownCourse = [];
-      for(let course in courses){
-        if(courses[course].ownerId === this.user._id){
+      for (let course in courses) {
+        if (courses[course].ownerId === this.user._id) {
           ownCourse.push(courses[course]);
         }
       }
@@ -376,12 +448,26 @@ export default {
     this.getCourseList();
   },
 
-  components: { SelectFolderCard, FABAdd, EmptyState, Snackbar, BackBtn },
+  components: { SelectFolderCard, FABAdd, EmptyState, Snackbar },
+
+  mounted() {
+    EventBus.$on("onDeleteFolder", (folder) => {
+      this.folderModel = folder;
+      this.isDeleteDialogShown = true;
+    });
+
+    EventBus.$on("onUpdateFolder", (folder) => {
+      this.folderModel = folder;
+      this.isDialogShown = true;
+    });
+  },
+
+  mixins: [loggerMixin],
 };
 </script>
 
 <style scoped>
-  .selected {
-    background-color: rgba(0, 147, 237, 0.2);
-  }
+.selected {
+  background-color: rgba(0, 147, 237, 0.2);
+}
 </style>
