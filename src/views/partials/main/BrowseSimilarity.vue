@@ -3,24 +3,27 @@
     <v-row>
       <v-col cols="6">
         <h1>{{ docs[selectedResult.firstDocIndex].documentOriginalName }}</h1>
-        <v-card
-          v-for="(item, index) in selectedResult.firstSubstring"
-          :key="index"
-          class="mb-8"
-        >
-          {{ item }}
-        </v-card>
       </v-col>
       <v-col cols="6">
         <h1>{{ docs[selectedResult.secondDocIndex].documentOriginalName }}</h1>
-        <v-card
-          v-for="(item, index) in selectedResult.secondSubstring"
-          :key="index"
-          class="mb-8"
-        >
-          {{ item }}
-        </v-card>
       </v-col>
+
+      <v-row
+        v-for="(item, index) in selectedResult.clusterSubstring"
+        :key="index"
+        class="mb-8"
+      >
+        <v-col cols="6">
+          <v-card>
+            {{ item[0] }}
+          </v-card>
+        </v-col>
+        <v-col cols="6">
+          <v-card>
+            {{ item[1] }}
+          </v-card>
+        </v-col>
+      </v-row>
     </v-row>
   </v-container>
 </template>
@@ -47,10 +50,8 @@ export default {
           selectedCluster.clusterPairIndex[this.$route.params.tableIndex][0],
         secondDocIndex:
           selectedCluster.clusterPairIndex[this.$route.params.tableIndex][1],
-        firstSubstring:
-          selectedCluster.clusterSubstrings[this.$route.params.tableIndex][0],
-        secondSubstring:
-          selectedCluster.clusterSubstrings[this.$route.params.tableIndex][1],
+        clusterSubstring:
+          selectedCluster.clusterSubstrings[this.$route.params.tableIndex],
       };
       return selected;
     },
