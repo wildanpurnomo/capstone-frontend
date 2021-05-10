@@ -10,13 +10,26 @@ export const analytics = {
             return AnalyticsService.analyze(documents)
                 .then(
                     response => {
-                        commit('analyzeSuccess', response.data.data);
+                        commit('analyzeSuccess', response.data.data.result);
                         return Promise.resolve(response);
                     },
                     error => {
                         return Promise.reject(error);
                     }
                 )
+        },
+
+        getAnalyticResult({ commit }, folderSlug) {
+            return AnalyticsService.getAnalyticResult(folderSlug)
+            .then(
+                response => {
+                    commit('analyzeSuccess', response.data.data.result);
+                    return Promise.resolve(response);
+                },
+                error => {
+                    return Promise.reject(error);
+                }
+            )
         }
     },
     mutations: {

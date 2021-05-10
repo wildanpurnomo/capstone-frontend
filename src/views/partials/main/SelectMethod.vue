@@ -2,26 +2,29 @@
   <v-container fill-height>
     <v-row>
       <div>
-        <h1>Bagaimana Anda ingin menganalisis dokumen?</h1>
+        <h1>Selamat datang, {{ user.username }}!</h1>
         <h3 class="mt-8 font-weight-regular">
-          Anda dapat menganalisis keseluruhan dokumen atau salah satu dokumen
+          Mulai analisis kemiripan submisi ujian dengan langkah berikut.
         </h3>
       </div>
     </v-row>
 
     <v-row>
-      <v-col cols="6" @click="toSelectFolder(0)">
+      <v-col
+        v-for="(item, index) in methods"
+        :key="index"
+        :cols="12 / methods.length"
+        @click="toSelectFolder()"
+      >
         <SelectMethodCard
-          :methodTitle="methods[0].title"
-          :methodDescription="methods[0].desc"
+          :methodTitle="item.title"
+          :methodDescription="item.desc"
         />
       </v-col>
-      <v-col cols="6" @click="toSelectFolder(1)">
-        <SelectMethodCard
-          :methodTitle="methods[1].title"
-          :methodDescription="methods[1].desc"
-        />
-      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-btn @click="toSelectFolder()">Mulai</v-btn>
     </v-row>
   </v-container>
 </template>
@@ -32,28 +35,33 @@ import SelectMethodCard from "@/components/SelectMethodCard";
 export default {
   name: "SelectMethod",
 
+  computed: {
+    user() {
+      return this.$store.getters["auth/userData"];
+    },
+  },
+
   data: () => ({
     methods: [
       {
-        title: "Analisis Keseluruhan Dokumen",
-        desc:
-          "Sistem menganalisis kemiripan keseluruhan dokumen submisi yang Anda unggah. Hasil analisa berupa persentase kemiripan antar butir soal.",
-        slugMethod: "overall-analytics",
+        title: "Buat Folder",
+        desc: "Folder merupakan kumpulan dokumen Anda.",
       },
       {
-        title: "Analisis Dokumen Spesifik",
-        desc:
-          "Sistem menganalisis kemiripan satu dokumen terhadap kumpulan submisi. Cocok digunakan ketika Anda hendak memastikan performa dari satu peserta ujian. Hasil analisa berupa persentase kemiripan antar butir soal.",
-        slugMethod: "specific-analytics",
+        title: "Unggah Dokumen",
+        desc: "Unggah submisi ujian pada folder.",
+      },
+      {
+        title: "Analisis Kemiripan",
+        desc: "Lakukan analisis pada folder.",
       },
     ],
   }),
 
   methods: {
-    toSelectFolder(index) {
+    toSelectFolder() {
       this.$router.push({
         name: "SelectFolder",
-        query: { method: this.methods[index].slugMethod },
       });
     },
   },

@@ -80,5 +80,12 @@ export default {
   mounted() {
     EventBus.$emit("onShowSnackbar", "Pengecekan Kemiripan Berhasil");
   },
+
+  created() {
+    if (this.analytics.length === 0) {
+      this.$store.dispatch("document/getDocuments", this.$route.params.folderSlug);
+      this.$store.dispatch("analytics/getAnalyticResult", this.$route.params.folderSlug);
+    }
+  }
 };
 </script>

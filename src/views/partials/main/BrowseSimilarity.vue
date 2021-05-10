@@ -4,7 +4,7 @@
       <v-spacer></v-spacer>
       <div>
         <h4 class="text-center font-weight-bold">
-          Plagiarisme<br>
+          Plagiarisme<br />
           {{ this.$route.params.similarities }}%
         </h4>
         <v-progress-linear
@@ -19,35 +19,37 @@
     </v-row>
     <v-row>
       <v-col cols="6">
-        <h2 class="font-weight-black">{{ docs[selectedResult.firstDocIndex].documentOriginalName }}</h2>
+        <h2 class="font-weight-black">
+          {{ docs[selectedResult.firstDocIndex].documentOriginalName }}
+        </h2>
       </v-col>
       <v-col cols="6">
-        <h2 class="font-weight-black">{{ docs[selectedResult.secondDocIndex].documentOriginalName }}</h2>
+        <h2 class="font-weight-black">
+          {{ docs[selectedResult.secondDocIndex].documentOriginalName }}
+        </h2>
       </v-col>
+    </v-row>
 
-      <div
-        v-for="(item, index) in selectedResult.clusterSubstring"
-        :key="index"
-        class="mb-4"
-      >
-      <v-row>
-        <v-col cols="6">
-          <v-card elevation="1" outlined>
-            <v-card-text class="black--text">
-              {{ item[0] }}
-            </v-card-text>
-          </v-card>
-        </v-col>
-        <v-col cols="6">
-          <v-card elevation="1" outlined>
-            <v-card-text class="black--text">
-              {{ item[1] }}
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-divider></v-divider>
-      </div>
+    <v-row
+      v-for="(item, index) in selectedResult.clusterSubstring"
+      :key="index"
+      class="mb-4"
+    >
+      <v-col cols="6">
+        <v-card elevation="1" outlined>
+          <v-card-text class="black--text">
+            {{ item[0] }}
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="6">
+        <v-card elevation="1" outlined>
+          <v-card-text class="black--text">
+            {{ item[1] }}
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col><v-divider></v-divider></v-col>
     </v-row>
   </v-container>
 </template>

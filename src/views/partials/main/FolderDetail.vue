@@ -225,6 +225,7 @@ export default {
       try {
         EventBus.$emit("onShowSnackbar", "Melakukan cek kemiripan...");
         let request = {
+          folderId: this.docs.folderId,
           documents: this.docs.documents.map((item) => {
             return item.documentUrl;
           }),

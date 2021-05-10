@@ -9,6 +9,10 @@ class AnalyticsService extends BaseService {
     analyze(data) {
         return this.sendAPIRequest(endpoints.analytics, 'POST', data)
     }
+
+    getAnalyticResult(folderSlug) {
+        return this.sendAPIRequest(endpoints.analyticResult, 'GET', null, folderSlug);
+    }
 }
 
 export default new AnalyticsService();

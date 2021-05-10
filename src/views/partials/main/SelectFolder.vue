@@ -427,14 +427,7 @@ export default {
     },
 
     courseList() {
-      let courses = this.$store.getters["classroom/courseList"];
-      let ownCourse = [];
-      for (let course in courses) {
-        if (courses[course].ownerId === this.user._id) {
-          ownCourse.push(courses[course]);
-        }
-      }
-      return ownCourse;
+      return this.$store.getters["classroom/courseList"];
     },
 
     courseWorkList() {
@@ -445,7 +438,7 @@ export default {
   created() {
     this.folderModel.creatorId = this.user._id;
     this.getFolder();
-    if(!(this.user.hasOwnProperty('email'))){
+    if (this.user.isUsingGoogleAuth) {
       this.getCourseList();
     }
   },
@@ -461,6 +454,12 @@ export default {
     EventBus.$on("onUpdateFolder", (folder) => {
       this.folderModel = folder;
       this.isDialogShown = true;
+    });
+
+    EventBus.$on("onAuthenticated", () => {
+      if (this.user.isUsingGoogleAuth) {
+        this.getCourseList();
+      }
     });
   },
 

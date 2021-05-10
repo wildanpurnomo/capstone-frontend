@@ -8,12 +8,7 @@
         <v-row class="pl-8 pt-6">
           <h1 class="mb-3">Capstone Similarity Check</h1>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis,
-            deleniti dolores. Exercitationem, commodi ducimus doloremque,
-            deserunt quas dolorum repudiandae, sit nihil ab nulla dicta alias
-            eius. Quia nobis excepturi iusto amet est error reiciendis magni
-            accusantium labore ratione ad nisi omnis, tempore commodi natus
-            temporibus. Aliquid, molestiae. Ab, veritatis quaerat?
+            Proyek Capstone berupa sistem deteksi kemiripan jawaban dokumen ujian daring.
           </p>
         </v-row>
 
