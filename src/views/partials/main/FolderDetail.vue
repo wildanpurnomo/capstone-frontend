@@ -2,7 +2,7 @@
   <div class="tambah">
     <v-container>
       <v-card class="py-5 px-10" elevation="4">
-        <h1 class="display-1 font-weight-bold text-center">Input Dokumen</h1>
+        <h1 class="display-1 font-weight-bold text-center">Upload Dokumen</h1>
         <p class="text-center pb-3">
           Folder: {{ convertSlugIntoTitleCase(this.$route.params.folderSlug) }}
         </p>
@@ -17,7 +17,6 @@
           >
             <template v-slot:top>
               <v-toolbar flat>
-                <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn color="primary" dark v-bind="attrs" v-on="on">
@@ -66,7 +65,7 @@
                     </v-card-title>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="closeDelete"
+                      <v-btn color="blue darken-1" text @click="close"
                         >Batal</v-btn
                       >
                       <v-btn
@@ -120,11 +119,9 @@ export default {
 
   data() {
     return {
-      editedItem: new FormData(),
       dialog: false,
       dialogDelete: false,
       loading: false,
-      threshold: 10,
       errorMessage: "",
       editedIndex: -1,
       documentsUpload: [],
@@ -132,7 +129,7 @@ export default {
       headers: [
         { text: "Nama Dokumen", value: "documentOriginalName" },
         { text: "Tanggal Diunggah", value: "updatedAt" },
-        { text: "Aksi", value: "actions", sortable: false },
+        { text: "", value: "actions", sortable: false },
       ],
       rules: {
         required: (val) => val.length > 0 || "Harus diisi",
@@ -148,7 +145,7 @@ export default {
     },
 
     dialogDelete(val) {
-      val || this.closeDelete();
+      val || this.close();
     },
   },
 
@@ -221,7 +218,7 @@ export default {
         EventBus.$emit("onShowSnackbar", message);
       }
 
-      this.closeDelete();
+      this.close();
     },
 
     async submit() {
@@ -250,16 +247,10 @@ export default {
 
     close() {
       this.dialog = false;
-      this.$nextTick(() => {
-        this.documentsUpload = [];
-        this.editedIndex = -1;
-      });
-    },
-
-    closeDelete() {
       this.dialogDelete = false;
       this.$nextTick(() => {
-        this.editedItem = new FormData();
+        this.documentsUpload = [];
+        this.toBeDeletedDocument = {};
         this.editedIndex = -1;
       });
     },

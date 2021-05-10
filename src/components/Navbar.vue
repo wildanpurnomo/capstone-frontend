@@ -57,7 +57,7 @@ export default {
   data: () => ({
     colorTheme: "#394867",
     menus: [
-      { title: 'Beranda', icon: 'mdi-home-outline', action: 'home'},
+      { title: 'Beranda', icon: 'mdi-home-variant-outline', action: 'home'},
       { title: 'Logout', icon: 'mdi-logout-variant', action: 'logout'},
     ],
   }),

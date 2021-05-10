@@ -1,6 +1,27 @@
 <template>
-  <div class="hasil">
-    <v-container>
+  <div>
+    <v-container v-if="analytics.length === 0">
+      <v-row>
+        <v-col cols="12">
+          <EmptyState
+            title="Dokumen Tidak Ada Yang Mengandung Kemiripan Satu Sama Lain"
+          />
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <div>
+          <v-btn
+            rounded
+            color="#394867"
+            class="white--text"
+            depressed
+            @click="home"
+          ><v-icon class="mr-1">mdi-home-variant-outline</v-icon>Beranda</v-btn>
+        </div>
+      </v-row>
+    </v-container>
+
+    <v-container v-else>
       <v-row>
         <v-col
           :cols="12 / analytics.length"
@@ -26,9 +47,10 @@
 <script>
 import Snackbar from "@/components/Snackbar";
 import { EventBus } from "@/bus";
+import EmptyState from "@/components/EmptyState";
 
 export default {
-  components: { Snackbar },
+  components: { Snackbar, EmptyState },
 
   computed: {
     analytics() {
@@ -49,12 +71,9 @@ export default {
         },
       });
     },
-  },
 
-  created() {
-    if (this.analytics.length === 0) {
-      this.$router.push({ name: "Dashboard" });
-      return;
+    home() {
+      this.$router.push({ name: "Dashboard"});
     }
   },
 

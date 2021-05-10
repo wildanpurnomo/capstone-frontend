@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row justify="center">
       <v-col cols="12">
         <h3>{{ title }}</h3>
       </v-col>
@@ -11,7 +11,7 @@
         </h5>
       </v-col>
 
-      <v-col cols="12">
+      <v-col cols="auto">
         <v-img src="@/assets/empty_state.png" max-width="500"></v-img>
       </v-col>
     </v-row>

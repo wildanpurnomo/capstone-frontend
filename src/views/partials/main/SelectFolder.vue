@@ -445,7 +445,9 @@ export default {
   created() {
     this.folderModel.creatorId = this.user._id;
     this.getFolder();
-    this.getCourseList();
+    if(!(this.user.hasOwnProperty('email'))){
+      this.getCourseList();
+    }
   },
 
   components: { SelectFolderCard, FABAdd, EmptyState, Snackbar },

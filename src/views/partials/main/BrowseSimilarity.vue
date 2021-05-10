@@ -1,29 +1,53 @@
 <template>
   <v-container>
     <v-row>
+      <v-spacer></v-spacer>
+      <div>
+        <h4 class="text-center font-weight-bold">
+          Plagiarisme<br>
+          {{ this.$route.params.similarities }}%
+        </h4>
+        <v-progress-linear
+          color="red lighten-1"
+          rounded
+          background-color="green accent-3"
+          :value="this.$route.params.similarities"
+          height="5"
+        ></v-progress-linear>
+      </div>
+      <v-spacer></v-spacer>
+    </v-row>
+    <v-row>
       <v-col cols="6">
-        <h1>{{ docs[selectedResult.firstDocIndex].documentOriginalName }}</h1>
+        <h2 class="font-weight-black">{{ docs[selectedResult.firstDocIndex].documentOriginalName }}</h2>
       </v-col>
       <v-col cols="6">
-        <h1>{{ docs[selectedResult.secondDocIndex].documentOriginalName }}</h1>
+        <h2 class="font-weight-black">{{ docs[selectedResult.secondDocIndex].documentOriginalName }}</h2>
       </v-col>
 
-      <v-row
+      <div
         v-for="(item, index) in selectedResult.clusterSubstring"
         :key="index"
-        class="mb-8"
+        class="mb-4"
       >
+      <v-row>
         <v-col cols="6">
-          <v-card>
-            {{ item[0] }}
+          <v-card elevation="1" outlined>
+            <v-card-text class="black--text">
+              {{ item[0] }}
+            </v-card-text>
           </v-card>
         </v-col>
         <v-col cols="6">
-          <v-card>
-            {{ item[1] }}
+          <v-card elevation="1" outlined>
+            <v-card-text class="black--text">
+              {{ item[1] }}
+            </v-card-text>
           </v-card>
         </v-col>
       </v-row>
+      <v-divider></v-divider>
+      </div>
     </v-row>
   </v-container>
 </template>

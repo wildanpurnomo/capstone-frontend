@@ -18,7 +18,7 @@
           </template>
 
           <template v-slot:[`item.similarities`]="{ value }">
-            {{ toPercent(value) }}
+            {{ toPercent(value) }}%
           </template>
         </v-data-table>
       </v-col>
@@ -83,7 +83,7 @@ export default {
 
   methods: {
     toPercent(rawFloat) {
-      return (rawFloat * 100).toFixed(2) + "%";
+      return (rawFloat * 100).toFixed(2);
     },
 
     onItemClick(value) {
@@ -93,6 +93,7 @@ export default {
           folderSlug: this.$route.params.folderSlug,
           clusterIndex: this.$route.params.clusterIndex,
           tableIndex: value.tableIndex,
+          similarities: this.toPercent(value.similarities),
         },
       });
     },
