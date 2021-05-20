@@ -1,13 +1,17 @@
 <template>
   <v-container fill-height>
     <v-row>
+      <BackBtn/>
+    </v-row>
+    <v-row>
       <h1>Folder Saya</h1>
       <v-spacer></v-spacer>
+      <v-divider vertical v-show="folderIndex !== -1"></v-divider>
       <div class="mt-auto" v-show="folderIndex !== -1">
-        <v-btn icon @click="menuActionClick('delete')"
+        <v-btn icon @click="menuActionClick('delete')" class="ml-1"
           ><v-icon>mdi-trash-can-outline</v-icon></v-btn
         >
-        <v-btn icon @click="menuActionClick('changeName')"
+        <v-btn icon @click="menuActionClick('changeName')" class="ml-1"
           ><v-icon>mdi-pencil-outline</v-icon></v-btn
         >
       </div>
@@ -54,21 +58,35 @@
       <v-col cols="12">
         <EmptyState
           title="Anda Belum Memiliki Folder Dokumen"
-          subtitle="Tambah folder untuk mulai"
+          subtitle="Buat folder dengan klik tombol di kanan bawah"
         />
       </v-col>
     </v-row>
 
-    <v-row v-if="courseList.length !== 0">
+    <v-row v-show="loadingCourse">
       <v-divider></v-divider>
     </v-row>
 
-    <v-row v-if="courseList.length !== 0">
+    <v-row v-show="loadingCourse" justify="center">
+      <v-progress-circular
+        indeterminate
+        class="mt-5"
+        size="64"
+        color="blue-grey"
+        width="6"
+      ></v-progress-circular>
+    </v-row>
+
+    <v-row v-show="courseList.length !== 0 && !loadingCourse && this.user.isUsingGoogleAuth">
+      <v-divider></v-divider>
+    </v-row>
+
+    <v-row v-show="courseList.length !== 0 && !loadingCourse && this.user.isUsingGoogleAuth">
       <h1>Kelas Google Classroom</h1>
       <v-spacer></v-spacer>
     </v-row>
 
-    <v-row v-if="courseList.length !== 0">
+    <v-row v-show="courseList.length !== 0 && !loadingCourse && this.user.isUsingGoogleAuth">
       <v-col cols="6" sm="3" v-for="(item, index) in courseList" :key="index">
         <SelectFolderCard
           :folderTitle="item.name"
@@ -81,12 +99,12 @@
     </v-row>
 
     <FABAdd
-      @click.native="isDialogAddShown = true"
+      @click.native="isDialogEditShown = true"
       tooltipMessage="Tambah Folder"
     />
 
     <v-dialog
-      v-model="isDialogAddShown"
+      v-model="isDialogEditShown"
       max-width="500px"
       @click:outside="close"
     >
@@ -118,9 +136,10 @@
       v-model="isDialogWorkShown"
       max-width="500px"
       transition="dialog-bottom-transition"
+      @click:outside="close"
     >
       <v-card>
-        <v-btn icon @click="isDialogWorkShown = false" plain>
+        <v-btn icon @click="close" plain>
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-card-title class="pt-0">
@@ -132,8 +151,8 @@
             color="#394867"
             :active="loading"
           ></v-progress-linear>
-          <v-row v-for="(item, index) in courseWorkList" :key="index">
-            <v-col cols="12" class="py-1 px-0">
+          <v-row v-for="(item, index) in courseWorkList" :key="index" justify="center" v-show="accessClassroom && !loading">
+            <v-col cols="12" class="py-1 px-0" style="cursor: pointer">
               <SelectFolderCard
                 :folderTitle="item.title"
                 :clipboard="true"
@@ -141,6 +160,12 @@
                 @click.native="toSubmissionDetail(item)"
               />
             </v-col>
+          </v-row>
+          <v-row v-if="accessClassroom && !courseWorkList && !loading" justify="center">
+            <h3>Tidak Ada Pengumpulan Tugas Dalam Kelas Ini</h3>
+          </v-row>
+          <v-row v-else-if="!accessClassroom && !loading" justify="center">
+            <h3>Anda Tidak Punya Akses Untuk Pengumpulan Tugas Kelas Ini</h3>
           </v-row>
         </v-card-text>
       </v-card>
@@ -164,21 +189,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <v-dialog v-model="isDeleteDialogShown" max-width="500px">
-      <v-card>
-        <v-card-title
-          >Anda akan menghapus {{ folderModel.folderName }}?</v-card-title
-        >
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="isDeleteDialogShown = false"
-            >Batal</v-btn
-          >
-          <v-btn color="blue darken-1" text @click="deleteFolder">Hapus</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
     <Snackbar :duration="3000" />
   </v-container>
 </template>
@@ -191,36 +201,24 @@ import EmptyState from "@/components/EmptyState";
 import folderModel from "@/models/folderModel";
 import Snackbar from "@/components/Snackbar";
 import loggerMixin from "@/mixins/loggerMixin";
+import BackBtn from "@/components/BackBtn"
 
 export default {
   name: "SelectFolder",
 
   data() {
     return {
-      isDialogShown: false,
-      isDeleteDialogShown: false,
       folderModel: new folderModel(),
-      isDialogAddShown: false,
+      isDialogEditShown: false,
       isDialogDeleteShown: false,
       isDialogWorkShown: false,
-      isDialogDetailShown: false,
       loading: false,
+      loadingCourse: false,
       folderIndex: -1,
-      classIndex: -1,
       newFolderName: "",
+      classIndex: -1,
       className: "",
-      addMenus: [
-        {
-          title: "Folder Baru",
-          icon: "mdi-folder-plus-outline",
-          action: "new",
-        },
-        {
-          title: "Google Classroom",
-          icon: "mdi-google-classroom",
-          action: "gClass",
-        },
-      ],
+      accessClassroom: true,
       showMenu: false,
       editedItem: Object,
       x: 0,
@@ -231,7 +229,11 @@ export default {
           icon: "mdi-pencil-outline",
           action: "changeName",
         },
-        { title: "Hapus", icon: "mdi-trash-can-outline", action: "delete" },
+        { 
+          title: "Hapus", 
+          icon: "mdi-trash-can-outline", 
+          action: "delete" 
+        },
       ],
     };
   },
@@ -254,17 +256,6 @@ export default {
     getFolder() {
       this.$store.dispatch("folder/getFolder");
       this.resetForm();
-    },
-
-    handleOnModalFormSubmit() {
-      if (
-        this.folderModel.folderId === undefined ||
-        this.folderModel.folderId === null
-      ) {
-        this.createFolder();
-      } else {
-        this.updateFolder();
-      }
     },
 
     async editFolder() {
@@ -316,19 +307,21 @@ export default {
     menuActionClick(action) {
       this.newFolderName = this.folderModel.folderName;
       if (action === "changeName") {
-        this.isDialogAddShown = true;
+        this.isDialogEditShown = true;
       } else if (action === "delete") {
         this.isDialogDeleteShown = true;
       }
     },
 
     close() {
-      this.isDialogAddShown = false;
+      this.isDialogEditShown = false;
       this.isDialogDeleteShown = false;
+      this.isDialogWorkShown = false;
       this.$nextTick(() => {
         this.folderModel = Object.assign({}, folderModel);
         this.newFolderName = "";
         this.folderIndex = -1;
+        this.accessClassroom = true;
       });
     },
 
@@ -344,21 +337,23 @@ export default {
     },
 
     toSubmissionDetail(item) {
-      let folderId = item.id;
       let folderName = item.title;
       this.$router.push({
-        name: "FolderDetail",
-        params: { folderId, folderName },
+        name: "SubmissionDetail",
+        params: {
+          folderSlug: folderName.trim().replace(/\s+/g, "-").toLowerCase(),
+          item: item,
+        },
         query: { method: this.$route.query.method },
       });
     },
 
     async getCourseList() {
-      this.loading = true;
+      this.loadingCourse = true;
       try {
         let response = await this.$store.dispatch("classroom/getCourseList");
         if (response.status === 200) {
-          this.loading = false;
+          this.loadingCourse = false;
         }
       } catch (error) {
         let message = this.decryptError(error);
@@ -369,34 +364,16 @@ export default {
     async getCourseWorkList(item) {
       this.loading = true;
       try {
-        let response = await this.$store.dispatch(
+        await this.$store.dispatch(
           "classroom/getCourseWorkList",
           item.id
         );
-        if (response.status === 200) {
-          this.loading = false;
-        }
       } catch (error) {
         let message = this.decryptError(error);
         EventBus.$emit("onShowSnackbar", message);
+        this.accessClassroom = false;
       }
-    },
-
-    async updateFolder() {
-      try {
-        let response = await this.$store.dispatch(
-          "folder/edit",
-          this.folderModel
-        );
-        if (response.status === 200) {
-          this.getFolder();
-          EventBus.$emit("onShowSnackbar", "Folder Berhasil Disunting");
-        }
-      } catch (error) {
-        let message = this.decryptError(error);
-        EventBus.$emit("onShowSnackbar", message);
-      }
-      this.isDialogShown = false;
+      this.loading = false;
     },
 
     async deleteFolder() {
@@ -413,7 +390,7 @@ export default {
         let message = this.decryptError(error);
         EventBus.$emit("onShowSnackbar", message);
       }
-      this.isDeleteDialogShown = false;
+      this.close();
     },
   },
 
@@ -443,19 +420,9 @@ export default {
     }
   },
 
-  components: { SelectFolderCard, FABAdd, EmptyState, Snackbar },
+  components: { SelectFolderCard, FABAdd, EmptyState, Snackbar, BackBtn },
 
   mounted() {
-    EventBus.$on("onDeleteFolder", (folder) => {
-      this.folderModel = folder;
-      this.isDeleteDialogShown = true;
-    });
-
-    EventBus.$on("onUpdateFolder", (folder) => {
-      this.folderModel = folder;
-      this.isDialogShown = true;
-    });
-
     EventBus.$on("onAuthenticated", () => {
       if (this.user.isUsingGoogleAuth) {
         this.getCourseList();

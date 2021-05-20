@@ -33,7 +33,7 @@ export const classroom = {
         },
 
         getCourseSubmissionList({ commit }, req) {
-            return ClassroomService.getCourseSubmissionList(req.courseId, req.courseWorkId)
+            return ClassroomService.getCourseSubmissionList(req.courseId, req.id)
                 .then(
                     response => {
                         commit('courseSubmissionListSuccess', response.data.data.submissionData);

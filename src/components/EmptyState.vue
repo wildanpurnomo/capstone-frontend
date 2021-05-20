@@ -1,11 +1,11 @@
 <template>
-  <v-container>
+  <v-container class="pt-0">
     <v-row justify="center">
-      <v-col cols="12">
+      <v-col cols="12" class="pt-0">
         <h3>{{ title }}</h3>
       </v-col>
 
-      <v-col cols="12">
+      <v-col cols="12" class="pt-0">
         <h5>
           {{ subtitle }}
         </h5>

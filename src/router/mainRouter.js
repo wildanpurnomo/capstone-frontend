@@ -19,6 +19,11 @@ export const mainRouter = {
             component: () => import('@/views/partials/main/FolderDetail')
         },
         {
+            path: '/main/Submission-detail/:folderSlug',
+            name: 'SubmissionDetail',
+            component: () => import('@/views/partials/main/SubmissionDetail')
+        },
+        {
             path: '/main/analytic-result/:folderSlug',
             name: 'Result',
             component: () => import('@/views/partials/main/AnalyticResult')

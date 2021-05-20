@@ -1,9 +1,8 @@
 <template>
-  <v-card class="pt-4 rounded-lg" style="cursor: pointer">
+  <v-card class="pt-4 rounded-lg">
     <v-row class="pl-6 pr-4">
-      <h3>{{ methodTitle }}</h3>
-      <v-spacer></v-spacer>
-      <v-icon large>mdi-chevron-right</v-icon>
+      <h3>{{ index }}. {{ methodTitle }}</h3>
+      <v-icon class="ml-3">{{ icon }}</v-icon>
     </v-row>
 
     <v-divider></v-divider>
@@ -21,6 +20,8 @@ export default {
   props: {
     methodTitle: String,
     methodDescription: String,
+    index: Number,
+    icon: String,
   },
 };
 </script>

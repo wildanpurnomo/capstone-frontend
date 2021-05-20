@@ -1,107 +1,136 @@
 <template>
-  <div class="tambah">
+  <div>
     <v-container>
-      <v-card class="py-5 px-10" elevation="4">
-        <h1 class="display-1 font-weight-bold text-center">Upload Dokumen</h1>
-        <p class="text-center pb-3">
-          Folder: {{ convertSlugIntoTitleCase(this.$route.params.folderSlug) }}
-        </p>
+      <v-row>
+        <BackBtn/>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-card class="py-5 px-10" elevation="4">
+            <h1 class="display-1 font-weight-bold text-center">{{ convertSlugIntoTitleCase(this.$route.params.folderSlug) }}</h1>
 
-        <v-form>
-          <v-data-table
-            :headers="headers"
-            :items="docs.documents"
-            :items-per-page="15"
-            :loading="loading"
-            loading-text="Sedang mengambil data"
-          >
-            <template v-slot:top>
-              <v-toolbar flat>
-                <v-dialog v-model="dialog" max-width="500px">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn color="primary" dark v-bind="attrs" v-on="on">
-                      <v-icon left>mdi-plus</v-icon>
-                      <span>Unggah Dokumen</span>
-                    </v-btn>
-                  </template>
-                  <v-card>
-                    <v-card-title
-                      ><span class="headline"
-                        >Unggah Dokumen</span
-                      ></v-card-title
-                    >
-                    <v-card-text>
-                      <v-container>
-                        <v-file-input
-                          label="Dokumen"
-                          accept=".docx, .doc, .pdf"
-                          multiple
-                          v-model="documentsUpload"
-                          :rules="[rules.required]"
-                          counter
-                          hint="Ukuran maksimal file 10MB"
-                          persistent-hint
-                        ></v-file-input>
-                      </v-container>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close"
-                        >Batal</v-btn
-                      >
-                      <v-btn color="blue darken-1" text @click="upload"
-                        >Unggah</v-btn
-                      >
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-
-                <v-dialog v-model="dialogDelete" max-width="550px">
-                  <v-card>
-                    <v-card-title class="headline"
-                      ><span class="mx-auto"
-                        >Apakah anda ingin menghapus dokumen ini?</span
-                      >
-                    </v-card-title>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" text @click="close"
-                        >Batal</v-btn
-                      >
-                      <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="deleteItemConfirm"
-                        >Hapus</v-btn
-                      >
-                      <v-spacer></v-spacer>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-toolbar>
-            </template>
-
-            <template v-slot:[`item.actions`]="{ item }">
-              <v-btn icon color="red" @click="deleteItem(item)"
-                ><v-icon small>mdi-delete</v-icon></v-btn
+            <v-form>
+              <v-data-table
+                :headers="headers"
+                :items="docs.documents"
+                :items-per-page="10"
+                :loading="loading"
+                loading-text="Sedang mengambil data dokumen"
               >
-            </template>
+                <template v-slot:top>
+                  <v-toolbar flat>
+                    <v-dialog v-model="dialog" max-width="500px">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn color="indigo darken-4" dark v-bind="attrs" v-on="on" rounded>
+                          <v-icon left>mdi-plus-thick</v-icon>
+                          <span>Unggah Dokumen</span>
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title
+                          ><span class="headline"
+                            >Unggah Dokumen</span
+                          ></v-card-title
+                        >
+                        <v-card-text>
+                          <v-container>
+                            <v-file-input
+                              label="Dokumen"
+                              accept=".docx, .doc, .pdf"
+                              multiple
+                              v-model="documentsUpload"
+                              :rules="[rules.required]"
+                              counter
+                              hint="Ukuran maksimal file 10MB"
+                              persistent-hint
+                            ></v-file-input>
+                          </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="indigo darken-4" text @click="close"
+                            >Batal</v-btn
+                          >
+                          <v-btn color="indigo darken-4" text @click="upload"
+                            >Unggah</v-btn
+                          >
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
 
-            <template v-slot:[`item.updatedAt`]="{ value }">
-              <p>{{ utcToIndonesiaFormat(value) }}</p>
-            </template>
+                    <v-dialog v-model="dialogDelete" max-width="600px">
+                      <v-card>
+                        <v-card-title class="headline"
+                          ><span class="mx-auto"
+                            >Hapus {{ folderName(toBeDeletedDocument.documentOriginalName) }}?</span
+                          >
+                        </v-card-title>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="indigo darken-4" text @click="close"
+                            >Batal</v-btn
+                          >
+                          <v-btn
+                            color="indigo darken-4"
+                            text
+                            @click="deleteItemConfirm"
+                            >Hapus</v-btn
+                          >
+                          <v-spacer></v-spacer>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </v-toolbar>
+                </template>
 
-            <template v-slot:no-data>
-              <span>Tidak ada dokumen</span>
-            </template>
-          </v-data-table>
+                <template v-slot:[`item.actions`]="{ item }">
+                  <v-btn icon color="red darken-2" @click="deleteItem(item)"
+                    ><v-icon small>mdi-delete</v-icon></v-btn
+                  >
+                  <a :href="item.documentUrl" target="_blank">
+                    <v-btn icon color="indigo darken-2"
+                      ><v-icon small>mdi-download</v-icon></v-btn
+                    >
+                  </a>
+                </template>
 
-          <v-btn class="green white--text" @click="submit">
-            <v-icon left color="white">mdi-magnify</v-icon>
-            <span>Cek Kemiripan</span>
-          </v-btn>
-        </v-form>
-      </v-card>
+                <template v-slot:[`item.updatedAt`]="{ value }">
+                  <p>{{ utcToIndonesiaFormat(value) }}</p>
+                </template>
+
+                <template v-slot:[`item.documentOriginalName`]="{ value }">
+                  <p>{{ folderName(value) }}</p>
+                </template>
+
+                <template v-slot:no-data>
+                  <span>Tidak ada dokumen</span>
+                </template>
+              </v-data-table>
+
+              <v-row justify="center" class="mt-3">
+                <v-btn class="white--text" @click="submit" color="green darken-1" rounded>
+                  <v-icon left color="white">mdi-magnify</v-icon>
+                  <span>Cek Kemiripan</span>
+                </v-btn>
+              </v-row>
+            </v-form>
+            <v-dialog 
+              v-model="loadingCheck" 
+              max-width="300px" 
+              persistent
+            >
+              <v-card>
+                <v-card-text>
+                  Melakukan Pengecekan Kemiripan
+                  <v-progress-linear 
+                    indeterminate
+                  ></v-progress-linear>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-container>
     <Snackbar :duration="3000" />
   </div>
@@ -112,17 +141,21 @@ import { EventBus } from "@/bus";
 import loggerMixin from "@/mixins/loggerMixin";
 import slugMixin from "@/mixins/slugMixin";
 import dateMixin from "@/mixins/dateMixin";
+import folderNameMixin from "@/mixins/folderNameMixin";
 import Snackbar from "@/components/Snackbar";
+import BackBtn from "@/components/BackBtn";
 
 export default {
-  components: { Snackbar },
+  name: "FolderDetail",
+
+  components: { Snackbar, BackBtn },
 
   data() {
     return {
       dialog: false,
       dialogDelete: false,
       loading: false,
-      errorMessage: "",
+      loadingCheck: false,
       editedIndex: -1,
       documentsUpload: [],
       toBeDeletedDocument: {},
@@ -133,8 +166,6 @@ export default {
       ],
       rules: {
         required: (val) => val.length > 0 || "Harus diisi",
-        numeric: (val) => /[0-9]/.test(val) || "Masukkan hanya angka",
-        percent: (val) => (val <= 100 && val >= 0) || "Input 0-100",
       },
     };
   },
@@ -150,10 +181,6 @@ export default {
   },
 
   computed: {
-    folder() {
-      return this.$store.getters["folder/folderData"];
-    },
-
     docs() {
       return this.$store.getters["document/documentData"];
     },
@@ -169,7 +196,6 @@ export default {
           folderSlug
         );
         if (response.status === 200) {
-          this.errorMessage = "";
           this.loading = false;
         }
       } catch (error) {
@@ -189,7 +215,6 @@ export default {
       try {
         let response = await this.$store.dispatch("document/upload", formData);
         if (response.status === 200) {
-          this.errorMessage = "";
           this.getDocument();
         }
       } catch (error) {
@@ -223,7 +248,7 @@ export default {
 
     async submit() {
       try {
-        EventBus.$emit("onShowSnackbar", "Melakukan cek kemiripan...");
+        this.loadingCheck = true;
         let request = {
           folderId: this.docs.folderId,
           documents: this.docs.documents.map((item) => {
@@ -234,6 +259,7 @@ export default {
         let response = await this.$store.dispatch("analytics/analyze", request);
 
         if (response.status === 200) {
+          this.loadingCheck = false;
           this.$router.push({
             name: "Result",
             params: { folderSlug: this.$route.params.folderSlug },
@@ -241,7 +267,7 @@ export default {
         }
       } catch (error) {
         let message = this.decryptError(error);
-        this.loading = false;
+        this.loadingCheck = false;
         EventBus.$emit("onShowSnackbar", message);
       }
     },
@@ -261,6 +287,6 @@ export default {
     this.getDocument();
   },
 
-  mixins: [loggerMixin, slugMixin, dateMixin],
+  mixins: [loggerMixin, slugMixin, dateMixin, folderNameMixin],
 };
 </script>

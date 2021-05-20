@@ -9,26 +9,34 @@
         </v-col>
       </v-row>
       <v-row justify="center">
-        <div>
-          <v-btn
-            rounded
-            color="#394867"
-            class="white--text"
-            depressed
-            @click="home"
-          ><v-icon class="mr-1">mdi-home-variant-outline</v-icon>Beranda</v-btn>
-        </div>
+        <v-btn
+          rounded
+          color="#394867"
+          class="white--text"
+          depressed
+          @click="$router.go(-1)"
+        ><v-icon class="mr-1">mdi-chevron-left</v-icon>Kembali</v-btn>
+        <v-btn
+          rounded
+          color="#394867"
+          class="white--text ml-2"
+          depressed
+          @click="home"
+        ><v-icon class="mr-1">mdi-home-variant-outline</v-icon>Beranda</v-btn>
       </v-row>
     </v-container>
 
     <v-container v-else>
       <v-row>
+        <BackBtn/>
+      </v-row>
+      <v-row>
         <v-col
-          :cols="12 / analytics.length"
+          :cols="6"
           v-for="(item, index) in analytics"
           :key="index"
           style="cursor: pointer"
-          @click="toAnalyticsDetail(index)"
+          @click="toAnalyticsDetail(index, item)"
         >
           <v-card>
             <v-card-title
@@ -46,11 +54,14 @@
 
 <script>
 import Snackbar from "@/components/Snackbar";
-import { EventBus } from "@/bus";
 import EmptyState from "@/components/EmptyState";
+import BackBtn from "@/components/BackBtn";
+import { EventBus } from "@/bus";
 
 export default {
-  components: { Snackbar, EmptyState },
+  name: "AnalyticResult",
+
+  components: { Snackbar, EmptyState, BackBtn },
 
   computed: {
     analytics() {
@@ -62,12 +73,14 @@ export default {
   },
   
   methods: {
-    toAnalyticsDetail(clusterIndex) {
+    toAnalyticsDetail(clusterIndex, item) {
       this.$router.push({
         name: "ResultDetail",
         params: {
           folderSlug: this.$route.params.folderSlug,
           clusterIndex: clusterIndex,
+          clusterMax: item.clusterMax,
+          clusterMin: item.clusterMin,
         },
       });
     },

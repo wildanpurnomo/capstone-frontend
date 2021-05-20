@@ -1,6 +1,9 @@
 <template>
   <v-container>
     <v-row>
+      <BackBtn/>
+    </v-row>
+    <v-row>
       <v-spacer></v-spacer>
       <div>
         <h4 class="text-center font-weight-bold">
@@ -19,13 +22,13 @@
     </v-row>
     <v-row>
       <v-col cols="6">
-        <h2 class="font-weight-black">
-          {{ docs[selectedResult.firstDocIndex].documentOriginalName }}
+        <h2 class="font-weight-black text-center">
+          {{ folderName(docs[selectedResult.firstDocIndex].documentOriginalName) }}
         </h2>
       </v-col>
       <v-col cols="6">
-        <h2 class="font-weight-black">
-          {{ docs[selectedResult.secondDocIndex].documentOriginalName }}
+        <h2 class="font-weight-black text-center">
+          {{ folderName(docs[selectedResult.secondDocIndex].documentOriginalName) }}
         </h2>
       </v-col>
     </v-row>
@@ -55,8 +58,15 @@
 </template>
 
 <script>
+import BackBtn from "@/components/BackBtn";
+import folderNameMixin from "@/mixins/folderNameMixin";
+
 export default {
   name: "BrowseSimilarity",
+
+  components: { BackBtn },
+
+  mixins: [ folderNameMixin ],
 
   computed: {
     selectedResult() {

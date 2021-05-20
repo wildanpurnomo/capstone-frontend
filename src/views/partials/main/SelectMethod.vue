@@ -3,8 +3,8 @@
     <v-row>
       <div>
         <h1>Selamat datang, {{ user.username }}!</h1>
-        <h3 class="mt-8 font-weight-regular">
-          Mulai analisis kemiripan submisi ujian dengan langkah berikut.
+        <h3 class="mt-5 font-weight-regular">
+          Analisis kemiripan submisi ujian dengan 3 langkah mudah berikut.
         </h3>
       </div>
     </v-row>
@@ -14,17 +14,26 @@
         v-for="(item, index) in methods"
         :key="index"
         :cols="12 / methods.length"
-        @click="toSelectFolder()"
       >
         <SelectMethodCard
           :methodTitle="item.title"
           :methodDescription="item.desc"
+          :icon="item.icon"
+          :index="index + 1"
         />
       </v-col>
     </v-row>
 
-    <v-row>
-      <v-btn @click="toSelectFolder()">Mulai</v-btn>
+    <v-row justify="center">
+      <v-btn 
+        class="white--text mt-3"
+        @click="toSelectFolder()"
+        color="green darken-1"
+        rounded
+        large
+      >
+        Mulai<v-icon>mdi-chevron-right</v-icon>
+      </v-btn>
     </v-row>
   </v-container>
 </template>
@@ -45,15 +54,18 @@ export default {
     methods: [
       {
         title: "Buat Folder",
-        desc: "Folder merupakan kumpulan dokumen Anda.",
+        desc: "Folder merupakan kumpulan dokumen anda.",
+        icon: "mdi-folder-plus-outline"
       },
       {
         title: "Unggah Dokumen",
         desc: "Unggah submisi ujian pada folder.",
+        icon: "mdi-upload"
       },
       {
         title: "Analisis Kemiripan",
         desc: "Lakukan analisis pada folder.",
+        icon: "mdi-clipboard-text-search-outline"
       },
     ],
   }),

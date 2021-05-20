@@ -1,34 +1,51 @@
 <template>
   <v-container>
     <v-row>
+      <BackBtn/>
+    </v-row>
+    <v-row>
       <v-col cols="12">
-        <v-data-table
-          :headers="headers"
-          :items="clusterInfo"
-          :items-per-page="5"
-          class="elevation-1 row-pointer"
-          @click:row="onItemClick"
-        >
-          <template v-slot:[`item.first`]="{ value }">
-            {{ docs[value].documentOriginalName }}
-          </template>
+        <v-card class="py-5">
+          <h1 class="display-1 font-weight-bold text-center">Kemiripan {{ clusterMin }} - {{ clusterMax }}</h1>
 
-          <template v-slot:[`item.second`]="{ value }">
-            {{ docs[value].documentOriginalName }}
-          </template>
+        <v-card-text>
+          <v-data-table
+            :headers="headers"
+            :items="clusterInfo"
+            :items-per-page="5"
+            sort-by="similarities"
+            class="elevation-1 row-pointer"
+            @click:row="onItemClick"
+          >
+            <template v-slot:[`item.first`]="{ value }">
+              {{ folderName(docs[value].documentOriginalName) }}
+            </template>
 
-          <template v-slot:[`item.similarities`]="{ value }">
-            {{ toPercent(value) }}%
-          </template>
-        </v-data-table>
+            <template v-slot:[`item.second`]="{ value }">
+              {{ folderName(docs[value].documentOriginalName) }}
+            </template>
+
+            <template v-slot:[`item.similarities`]="{ value }">
+              {{ toPercent(value) }}%
+            </template>
+          </v-data-table>
+        </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
+import folderNameMixin from "@/mixins/folderNameMixin";
+import BackBtn from "@/components/BackBtn";
+
 export default {
   name: "AnalyticsDetail",
+
+  mixins: [ folderNameMixin ],
+
+  components: { BackBtn },
 
   data() {
     return {
@@ -46,6 +63,8 @@ export default {
           value: "similarities",
         },
       ],
+      clusterMax: String,
+      clusterMin: String,
     };
   },
 
@@ -104,6 +123,9 @@ export default {
       this.$router.push({ name: "Dashboard" });
       return;
     }
+
+    this.clusterMax = this.$route.params.clusterMax;
+    this.clusterMin = this.$route.params.clusterMin;
   },
 };
 </script>
